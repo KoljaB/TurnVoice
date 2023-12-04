@@ -73,4 +73,8 @@ I recommend using a 24000 Hz, 16 bit, mono wav file of 10-30 second length. Acco
   Currently does too many synthesis tries per sentence fragment. Can be done better.
 - Grab clone voice from another youtube video.
 
-Note: Make sure to comply with both YouTube's terms of service and copyright laws as well as Coqui's [Public Model License 1.0.0](https://coqui.ai/cpml) when using this tool.
+## License
+
+The project is under [Coqui Public Model License 1.0.0](https://coqui.ai/cpml).
+
+Make sure to comply with both YouTube's terms of service and copyright laws as well as Coqui's [Public Model License 1.0.0](https://coqui.ai/cpml) when using this tool.
