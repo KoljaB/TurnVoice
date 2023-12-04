@@ -1,0 +1,4 @@
+moviepy==1.0.3
+yt-dlp==2023.11.16
+faster_whisper==0.10.0
+realtimetts==0.3.32
