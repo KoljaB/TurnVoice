@@ -23,26 +23,38 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://downl
 ## Usage
 
 ```bash
-turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video Filename>
+turnvoice [-u] <YouTube Video URL|ID> [-l] <Translation Language> -r <Reference WAV File> -o <Output Video Filename>
+```
+
+For example, this is musk with the female default voice:
+```bash
+turnvoice RK91Ji6GCZ8
+```
+
+Same translated to german:
+```bash
+turnvoice RK91Ji6GCZ8 de
 ```
 
 ### Parameters Explained:
 
-- `-u`, `--url`: (required) The YouTube video URL you want to transform
+- `-u`, `--url`: (required) The YouTube video ID or URL you want to transform
 - `-l`, `--language`: Language to translate to (supported: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko)
-- `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads')
-- `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
+   *leaving this out keeps the source video language*
+- `-d`, `--download_directory`: Where to save the video downloads (default: 'downloads')
+- `-s`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
 - `-e`, `--extract`: Use with -e to extract audio directly from the video (may lead to lower quality but can reduce likelihood of errors)
-- `-rw`, `--reference_wav`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
-- `-ov`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
+- `-r`, `--reference_wav`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
+- `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
+
+You can leave out -u and -l as first parameters.
 
 ### Example Command:
 
 Ever wanted Arthur Morgan to narrate a cooking tutorial? Here's how:
 
-```bash
-turnvoice -u https://www.youtube.com/watch?v=AmC9SmCBUj4 -rw arthur.wav -ov cooking_with_arthur.mp4
-```
+turnvoice AmC9SmCBUj4 -r arthur.wav -o cooking_with_arthur.mp4
+
 
 *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
 

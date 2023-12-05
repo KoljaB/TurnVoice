@@ -8,17 +8,16 @@ from .fragtokenizer import create_synthesizable_fragments
 from .videocut import create_composite_audio, overlay_audio_on_video
 from .synthesis import Synthesis
 from .translate import translate
-# def translate(text: str, source: str = "en", target: str = "de") -> str:
 
 
 def process_video(
-        url = "https://www.youtube.com/watch?v=FJ3N_2r6R-o",
-        language = "",
-        download_directory = "downloads",
-        synthesis_directory = "synthesis",
-        extract = False, 
-        reference_wav = "reference.wav", 
-        output_video = "final_cut.mp4"):
+        url_or_id: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        language: str = "",
+        download_directory: str = "downloads",
+        synthesis_directory: str = "synthesis",
+        extract: bool = False, 
+        reference_wav: str = "reference.wav", 
+        output_video: str = "final_cut.mp4"):
     """
     Downloads a YouTube video, transcribes its audio, and replaces the original voice
     with a synthetic one.
@@ -32,11 +31,25 @@ def process_video(
     reference_audio (str): Reference audio file for voice synthesis.
     output_video (str): Filename for the output video with synthetic voice.
     """
+
+    # also accept video IDs
+    if not "youtube.com" in url_or_id.lower():
+
+        # YouTube video IDs are typically 11 characters long
+        video_id_length = 11
+        if len(url_or_id) > video_id_length:
+            # Extract the last 11 characters, assuming they represent the video ID
+            video_id = url_or_id[-video_id_length:]
+        else:
+            video_id = url_or_id
+
+        url_or_id = "https://www.youtube.com/watch?v=" + video_id
+
     if synthesis_directory and not os.path.exists(synthesis_directory):
         os.makedirs(synthesis_directory)
 
     print("Downloading video...")
-    _, audio_file, video_file_muted = fetch_youtube(url, extract=extract, directory=download_directory)
+    _, audio_file, video_file_muted = fetch_youtube(url_or_id, extract=extract, directory=download_directory)
 
     print("Transcribing audio...")
     segments, info  = transcribe(audio_file)
@@ -49,7 +62,7 @@ def process_video(
     print("Creating synthesizable fragments...")
     sentences = create_synthesizable_fragments(words)
 
-    if len(language) > 0:
+    if len(language) > 0 and detected_input_language != language:
         print ("Translating from " + detected_input_language + " to " + language)
 
         translated_sentences = []
@@ -117,18 +130,27 @@ def print_sentence_info(sentence, index, total_sentences):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Replaces original voices in Youtube videos.")
+    parser = argparse.ArgumentParser(description="Replaces voices in Youtube videos. Can translate.")
 
-    # Adding arguments
-    parser.add_argument('-u', '--url', type=str, required=True, help='URL of the YouTube video.')
-    parser.add_argument('-l', '--language', type=str, default='', help='Language code for transcription. Default is "en".')
-    parser.add_argument('-dd', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
-    parser.add_argument('-sd', '--synthesis_directory', type=str, default='synthesis', help='Directory to save synthesized audio files.')
+    # URL as both positional and optional argument
+    parser.add_argument('url', nargs='?', type=str, help='URL or ID of the YouTube video. (Positional)')
+    parser.add_argument('-u', '--url', dest='url_optional', type=str, help='URL of the YouTube video. (Optional)')
+
+    # Language as both positional and optional argument
+    parser.add_argument('language', nargs='?', type=str, default='', help='Language code for transcription. (Positional)')
+    parser.add_argument('-l', '--language', dest='language_optional', type=str, help='Language code for transcription. (Optional)')
+
+    parser.add_argument('-d', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
+    parser.add_argument('-s', '--synthesis_directory', type=str, default='synthesis', help='Directory to save synthesized audio files.')
     parser.add_argument('-e', '--extract', action='store_true', help='Extract audio from the video file.')
-    parser.add_argument('-rw', '--reference_wav', type=str, default='reference.wav', help='Reference audio file for voice synthesis.')
-    parser.add_argument('-ov', '--output_video', type=str, default='final_cut.mp4', help='Filename for the output video with synthetic voice.')
+    parser.add_argument('-r', '--reference_wav', type=str, default='reference.wav', help='Reference audio file for voice synthesis.')
+    parser.add_argument('-o', '--output_video', type=str, default='final_cut.mp4', help='Filename for the output video with synthetic voice.')
 
     args = parser.parse_args()
+
+    url = args.url_optional if args.url_optional is not None else args.url
+    language = args.language_optional if args.language_optional is not None else args.language
+
 
     # Ensure directories exist
     if not os.path.exists(args.download_directory):
@@ -139,8 +161,8 @@ def main():
 
     # Call the main processing function
     process_video(
-        url=args.url,
-        language=args.language,
+        url_or_id=url,
+        language=language,
         download_directory=args.download_directory,
         synthesis_directory=args.synthesis_directory,
         extract=args.extract,

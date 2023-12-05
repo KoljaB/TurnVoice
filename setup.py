@@ -9,10 +9,10 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="TurnVoice", 
-    version="0.0.21",
+    version="0.0.22",
     author="Kolja Beigel",
     author_email="kolja.beigel@web.de",
-    description="Replace voices in youtube videos",
+    description="Replaces and translates voices in youtube videos",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/KoljaB/TurnVoice",
