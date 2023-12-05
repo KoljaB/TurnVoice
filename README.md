@@ -69,7 +69,7 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 
 ## License
 
-TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml) and [NLLB-200 CC-BY-NC License](https://huggingface.co/facebook/nllb-200-distilled-600M) (NonCommercial licenses). 
+TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml) and [NLLB-200 CC-BY-NC License](https://huggingface.co/facebook/nllb-200-distilled-600M) (these are OpenSource NonCommercial licenses). 
 
 ## Let's Make It Fun! 🎉
 
