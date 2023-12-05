@@ -1,6 +1,6 @@
 # TurnVoice
 
-A command-line tool to replace voices in youtube videos. Can also translate.
+A command-line tool that replace voices in youtube videos and can also translate.
 
 ## Installation 
 
@@ -28,13 +28,13 @@ turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video File
 
 ### Parameters Explained:
 
-- `-u`, `--url`: (required) The YouTube video URL you want to transform.
-- `-l`, `--language`: Translation language 
-- `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads').
-- `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis').
+- `-u`, `--url`: (required) The YouTube video URL you want to transform
+- `-l`, `--language`: Language to translate to (supported: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko)
+- `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads')
+- `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
 - `-e`, `--extract`: Use with -e to extract audio directly from the video (may lead to lower quality but can reduce likelihood of errors)
 - `-rw`, `--reference_wav`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
-- `-ov`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4').
+- `-ov`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
 
 ### Example Command:
 
@@ -44,7 +44,7 @@ Ever wanted Arthur Morgan to narrate a cooking tutorial? Here's how:
 turnvoice -u https://www.youtube.com/watch?v=AmC9SmCBUj4 -rw arthur.wav -ov cooking_with_arthur.mp4
 ```
 
-*This example needs a arthur.wav clone wav file in the same directory. Works when executed from the tests directory.*
+*This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
 
 ## Pro Tips
 
