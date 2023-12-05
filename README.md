@@ -1,80 +1,83 @@
-# TurnVoice
+# TurnVoice 🎬
 
-*A YouTube Video Voice Replacement Tool*  
+A command-line tool to replace voices in youtube videos.
 
-This tool provides a convenient way to download YouTube videos, transcribe their audio, and replace the original voice with another one.  
-
-## Features
-
-- **YouTube Video Download:** Downloads a specific YouTube video.
-- **Audio Transcription:** Transcribes the audio of the downloaded video.
-- **Voice Synthesis:** Replaces the original voice in the video with a synthetic voice.
-
-## Installation
-
-This should make you ready:
+## Installation 
 
 ```
 pip install turnvoice
 ```
 
-If you like it faster, get your [CUDA](https://pytorch.org/get-started/locally/) ready:  
+For a speedier experience, prepare your [CUDA](https://pytorch.org/get-started/locally/) environment:
 
-For CUDA 11.8:
+**CUDA 11.8:**
 ```
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
 ```
 
-For CUDA v12.1:
+**CUDA v12.1:**
 ```
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://download.pytorch.org/whl/cu211
 ```
 
-## Usage
-
-This tool is executed via the command line. Below are the parameters that can be configured:
-
-- `-u`, `--url` (required): URL of the YouTube video to process.
-- `-l`, `--language`: Language code for assumed transcription (default: 'en') language and synthesis language.
-- `-dd`, `--download_directory`: Directory for saving downloaded files (default: 'downloads').
-- `-sd`, `--synthesis_directory`: Directory for saving synthesized audio files (default: 'synthesis').
-- `-e`, `--extract`: Flag to extract audio from the video file. Set to false downloads audio seperately, can lead to better quality but also increase likelihood of errors.
-- `-rw`, `--reference_wav`: Reference audio file for voice synthesis. Can be wav or calculated json file.
-- `-ov`, `--output_video`: Filename for the output video with synthetic voice (default: 'final_cut.mp4').
-
-## Example Command
+## Usage 🎮
 
 ```bash
-turnvoice -u https://www.youtube.com/watch?v=JfV6UcF18ts -rw arthur_morgan.wav -ov rdr2.mp4
+turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video Filename>
 ```
 
-Exchanges all voices in the given youtube vid with the voice in "arthur_morgan.wav" and writes the final cut into rdr2.mp4
+### Parameters Explained:
 
-## Hints
+- `-u`, `--url`: (required) The YouTube video URL you want to transform.
+- `-l`, `--language`: The language for transcription and synthesis (default: 'en').
+- `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads').
+- `-sd`, `--synthesis_directory`: Secret lab for tts synthesis audio files (default: 'synthesis').
+- `-e`, `--extract`: To extract or not to extract audio directly from the video? That is the question. False can lead to better quality but also increase likelihood of errors.
+- `-rw`, `--reference_wav`: Your chosen voice in wav format (24000 Hz, 16 bit)
+- `-ov`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4').
 
-### Fixed TTS model download folder
+### Example Command:
 
-Create a fixed folder (for example C:\Downloads\CoquiModels) for your coqui xtts model downloads and set the environment variable COQUI_MODEL_PATH to this folder.
+Ever wanted Arthur Morgan to narrate a cooking tutorial? Here's how:
 
-Windows (example folder):
+```bash
+turnvoice -u https://www.youtube.com/watch?v=AmC9SmCBUj4 -rw arthur.wav -ov cooking_with_arthur.mp4
 ```
+
+*This example needs a arthur.wav clone wav file in the same directory. May magically work when executed from the test directory though.*
+
+## Pro Tips 🧙‍♂️
+
+### The Art of Choosing a Reference Wav:
+- A 24000, 44100 or 22050 Hz 16-bit, mono wav file of 10-30 seconds is your golden ticket.
+- Audacity is your friend for adjusting sample rates. Experiment with frame rates for best results!
+
+### Fixed TTS Model Download Folder:
+Keep your models organized! Set `COQUI_MODEL_PATH` to your preferred folder.
+
+Windows example:
+```bash
 setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 ```
 
-### Reference Wav
+## Future Improvements 🚀
 
-I recommend using a 24000 Hz, 16 bit, mono wav file of 10-30 second length. According to the config.json of the synthesis model it should be 22050Hz but it works better with 24000 in my experience. You can use Audacity to drop any input audio, set the sample rate at the down left bottom to 24000 and then export as 16 bit PCM. 
+- **Optional Translation**: Polyglot? Coming soon!
+- **Optimized Synthesis**: Reducing the synthesis tries for faster results.
+- **Voice Cloning from YouTube**: Imagine cloning voices directly from other videos!
 
-## Future Improvements
+## License 📜
 
-- Optional Translation: 
-  coming soon
-- Optimized synthesis. 
-  Currently does too many synthesis tries per sentence fragment. Can be done better.
-- Grab clone voice from another youtube video.
+TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml). 
 
-## License
+## Let's Make It Fun! 🎉
 
-The project is under [Coqui Public Model License 1.0.0](https://coqui.ai/cpml).
+Share your funniest or most creative TurnVoice creations with me! 
 
-Make sure to comply with both YouTube's terms of service and copyright laws as well as Coqui's [Public Model License 1.0.0](https://coqui.ai/cpml) when using this tool.
+And if you've got a cool feature idea or just want to say hi, drop me a line on
+
+- [Twitter](https://twitter.com/LonLigrin)  
+- [Reddit](https://www.reddit.com/user/Lonligrin)  
+- [EMail](mailto:kolja.beigel@web.de)  
+
+Don't forget to leave a star.
