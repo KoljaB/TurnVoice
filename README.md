@@ -72,7 +72,7 @@ TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.
 
 ## Let's Make It Fun! 🎉
 
-Share your funniest or most creative TurnVoice creations with me! 
+[Share](https://github.com/KoljaB/TurnVoice/discussions) your funniest or most creative TurnVoice creations with me! 
 
 And if you've got a cool feature idea or just want to say hi, drop me a line on
 
