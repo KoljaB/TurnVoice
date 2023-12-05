@@ -3,7 +3,7 @@ from .word import Word
 model_size = "large-v2"
 model = WhisperModel(model_size, device="cuda", compute_type="float16")
     
-def transcribe(file_name, language="en"):
+def transcribe(file_name, language=None):
     """
     Transcribes a audio file, returns transcript and word timestamps.
     """

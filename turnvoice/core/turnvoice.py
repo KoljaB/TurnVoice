@@ -4,14 +4,16 @@ from moviepy.editor import AudioFileClip
 
 from .download import fetch_youtube
 from .transcribe import transcribe, extract_words
-from .tokenize import create_synthesizable_fragments
+from .fragtokenizer import create_synthesizable_fragments
 from .videocut import create_composite_audio, overlay_audio_on_video
 from .synthesis import Synthesis
+from .translate import translate
+# def translate(text: str, source: str = "en", target: str = "de") -> str:
 
 
 def process_video(
         url = "https://www.youtube.com/watch?v=FJ3N_2r6R-o",
-        language = "en",
+        language = "",
         download_directory = "downloads",
         synthesis_directory = "synthesis",
         extract = False, 
@@ -37,7 +39,9 @@ def process_video(
     _, audio_file, video_file_muted = fetch_youtube(url, extract=extract, directory=download_directory)
 
     print("Transcribing audio...")
-    segments, _ = transcribe(audio_file, language=language)
+    segments, info  = transcribe(audio_file)
+    detected_input_language = info.language
+    synthesis_language = language if len(language) > 0 else detected_input_language
 
     print("Extracting words...")
     words = extract_words(segments)
@@ -45,8 +49,19 @@ def process_video(
     print("Creating synthesizable fragments...")
     sentences = create_synthesizable_fragments(words)
 
+    if len(language) > 0:
+        print ("Translating from " + detected_input_language + " to " + language)
+
+        translated_sentences = []
+        for sentence in sentences:
+            translated_sentence = translate(sentence["text"], source=detected_input_language, target=language)
+            sentence["text"] = translated_sentence
+            translated_sentences.append(sentence)
+
+        sentences = translated_sentences
+
     print(f"Starting synthesis for {len(sentences)} sentences...")
-    synthesis = Synthesis(language=language, reference_wav=reference_wav)
+    synthesis = Synthesis(language=synthesis_language, reference_wav=reference_wav)
     synthesize_sentences(sentences, synthesis, synthesis_directory)
 
     print("Creating composite audio...")
@@ -106,7 +121,7 @@ def main():
 
     # Adding arguments
     parser.add_argument('-u', '--url', type=str, required=True, help='URL of the YouTube video.')
-    parser.add_argument('-l', '--language', type=str, default='en', help='Language code for transcription. Default is "en".')
+    parser.add_argument('-l', '--language', type=str, default='', help='Language code for transcription. Default is "en".')
     parser.add_argument('-dd', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
     parser.add_argument('-sd', '--synthesis_directory', type=str, default='synthesis', help='Directory to save synthesized audio files.')
     parser.add_argument('-e', '--extract', action='store_true', help='Extract audio from the video file.')

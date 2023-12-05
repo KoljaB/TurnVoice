@@ -1,5 +1,5 @@
 from moviepy.editor import AudioFileClip
-from turnvoice.core.tokenize import create_synthesizable_fragments
+from turnvoice.core.fragtokenizer import create_synthesizable_fragments
 from turnvoice.core.transcribe import transcribe, extract_words
 from turnvoice.core.stripsilence import strip_silence
 from turnvoice.core.download import fetch_youtube

@@ -7,6 +7,9 @@ import os
 
 class Synthesis:
     def __init__(self, language = "en", reference_wav="TV_Total.wav"):
+        if language == "zh":
+            language = "zh-cn"
+
         self.engine = CoquiEngine(language=language, cloning_reference_wav=reference_wav)
         self.stream = TextToAudioStream(self.engine)
 

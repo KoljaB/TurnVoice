@@ -1,6 +1,6 @@
 # TurnVoice
 
-A command-line tool to replace voices in youtube videos.
+A command-line tool to replace voices in youtube videos. Can also translate.
 
 ## Installation 
 
@@ -29,7 +29,7 @@ turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video File
 ### Parameters Explained:
 
 - `-u`, `--url`: (required) The YouTube video URL you want to transform.
-- `-l`, `--language`: The language for transcription and synthesis (default: 'en').
+- `-l`, `--language`: Translation language 
 - `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads').
 - `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis').
 - `-e`, `--extract`: Use with -e to extract audio directly from the video (may lead to lower quality but can reduce likelihood of errors)
@@ -64,13 +64,12 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 
 ## Future Improvements
 
-- **Optional Translation**: Polyglot? Coming soon!
 - **Optimized Synthesis**: Reducing the synthesis tries for faster results.
 - **Voice Cloning from YouTube**: Imagine cloning voices directly from other videos!
 
 ## License
 
-TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml). 
+TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml) and [NLLB-200 CC-BY-NC License](https://huggingface.co/facebook/nllb-200-distilled-600M) (NonCommercial licenses). 
 
 ## Let's Make It Fun! 🎉
 
