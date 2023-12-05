@@ -19,7 +19,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
        entry_points={
         'console_scripts': [
-            'turnvoice=core.turnvoice:main',
+            'turnvoice=turnvoice.core.turnvoice:main',
         ],
     },
     classifiers=[

@@ -1,2 +1,2 @@
-python -m unittest tests.tests.TestFrag
+python -m unittest turnvoice.tests.tests.TestFrag
 cmd

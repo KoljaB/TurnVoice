@@ -1,2 +1,2 @@
-python -m unittest tests.tests.TestSynthesis
+python -m unittest turnvoice.tests.tests.TestSynthesis
 cmd

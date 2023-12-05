@@ -1,9 +1,9 @@
 from moviepy.editor import AudioFileClip
-from core.tokenize import create_synthesizable_fragments
-from core.transcribe import transcribe, extract_words
-from core.download import fetch_youtube
-from core.synthesis import Synthesis
-from core.word import Word
+from turnvoice.core.tokenize import create_synthesizable_fragments
+from turnvoice.core.transcribe import transcribe, extract_words
+from turnvoice.core.download import fetch_youtube
+from turnvoice.core.synthesis import Synthesis
+from turnvoice.core.word import Word
 import unittest
 import shutil
 import json
@@ -52,9 +52,9 @@ class TestTranscript(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.transcribe_test_audio_file = "tests/audio/testaudio.wav"
+        cls.transcribe_test_audio_file = "turnvoice/tests/audio/testaudio.wav"
 
-        result_directory = "tests/results"
+        result_directory = "turnvoice/tests/results"
         if not os.path.exists(result_directory):
             os.makedirs(result_directory)
 

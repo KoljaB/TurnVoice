@@ -1,2 +1,2 @@
-python -m unittest tests.tests.TestDownloadVideo
+python -m unittest turnvoice.tests.tests.TestDownloadVideo
 cmd

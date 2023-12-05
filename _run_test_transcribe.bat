@@ -1,2 +1,2 @@
-python -m unittest tests.tests.TestTranscript
+python -m unittest turnvoice.tests.tests.TestTranscript
 cmd
