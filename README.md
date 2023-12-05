@@ -31,9 +31,9 @@ For example, this is musk with female (default) voice:
 turnvoice RK91Ji6GCZ8
 ```
 
-Same translated to german:
+Same translated to spanish:
 ```bash
-turnvoice RK91Ji6GCZ8 de
+turnvoice RK91Ji6GCZ8 es
 ```
 
 ### Parameters Explained:
