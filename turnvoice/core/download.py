@@ -4,7 +4,7 @@ import os
 
 def fetch_youtube(
         url: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 
-        extract = True,
+        extract = False,
         directory: str = "downloaded_files"): 
     """
     Downloads a video from the provided YouTube URL.

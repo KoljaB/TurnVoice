@@ -1,9 +1,11 @@
 from moviepy.editor import AudioFileClip
 from turnvoice.core.tokenize import create_synthesizable_fragments
 from turnvoice.core.transcribe import transcribe, extract_words
+from turnvoice.core.stripsilence import strip_silence
 from turnvoice.core.download import fetch_youtube
 from turnvoice.core.synthesis import Synthesis
 from turnvoice.core.word import Word
+from pydub import AudioSegment
 import unittest
 import shutil
 import json
@@ -48,6 +50,8 @@ class TestDownloadVideo(unittest.TestCase):
         self.assertTrue(audio_file)
         self.assertTrue(video_file_muted)
 
+
+
 class TestTranscript(unittest.TestCase):
 
     @classmethod
@@ -83,6 +87,8 @@ class TestTranscript(unittest.TestCase):
         # Compare the original words list with the one read from file
         self.assertEqual(words_dict, words_from_file)
 
+
+
 class TestFrag(unittest.TestCase):
 
     def test_fragmentation(self):
@@ -101,6 +107,8 @@ class TestFrag(unittest.TestCase):
             {"text": "This is a test.", "start": 1.5, "end": 3.5}
         ]
         self.assertEqual(sentences, expected_sentences)
+
+
 
 class TestSynthesis(unittest.TestCase):
 
@@ -131,3 +139,47 @@ class TestSynthesis(unittest.TestCase):
 
         # Shutdown the synthesis engine
         synthesis.close()        
+
+
+
+class TestStripSilence(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # Setup paths for input and output audio files
+        cls.input_audio_file = "turnvoice/tests/audio/stripsilence_test1.wav"
+        cls.output_audio_file = "turnvoice/tests/audio/stripsilence_test1_out.wav"
+
+    def test_strip_silence(self):
+        # Call the strip_silence function
+        strip_silence(self.input_audio_file, self.output_audio_file)
+
+        # Load the original and stripped audio files
+        original_audio = AudioSegment.from_wav(self.input_audio_file)
+        stripped_audio = AudioSegment.from_wav(self.output_audio_file)
+
+        # Check that the stripped audio is shorter than the original
+        self.assertLessEqual(len(stripped_audio), len(original_audio))
+
+    def test_no_silence(self):
+        # Call the strip_silence function with an audio file that has no silence
+        # You will need to create or use an audio file with no silence for this test
+        no_silence_audio_file = "turnvoice/tests/audio/stripsilence_test2.wav"
+        output_no_silence_file = "turnvoice/tests/audio/stripsilence_test2_out.wav"
+
+        strip_silence(no_silence_audio_file, output_no_silence_file)
+
+        # Check if the output file duration is the same as the input file
+        input_audio = AudioSegment.from_wav(no_silence_audio_file)
+        output_audio = AudioSegment.from_wav(output_no_silence_file)
+
+        self.assertEqual(len(input_audio), len(output_audio))
+
+    @classmethod
+    def tearDownClass(cls):
+        # Cleanup: Remove the output audio files
+        import os
+        # if os.path.exists(cls.output_audio_file):
+        #     os.remove(cls.output_audio_file)
+        # if os.path.exists("turnvoice/tests/audio/stripsilence_test2_out.wav"):
+        #     os.remove("turnvoice/tests/audio/stripsilence_test2_out.wav")

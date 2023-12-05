@@ -32,8 +32,8 @@ turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video File
 - `-l`, `--language`: The language for transcription and synthesis (default: 'en').
 - `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads').
 - `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis').
-- `-e`, `--extract`: Extract audio directly from the video? False downloads separate files which often leads to better quality but can also increase likelihood of errors (default: 'true').
-- `-rw`, `--reference_wav`: Your chosen voice in wav format (24000 Hz, 16 bit)
+- `-e`, `--extract`: Use with -e to extract audio directly from the video (may lead to lower quality but can reduce likelihood of errors)
+- `-rw`, `--reference_wav`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
 - `-ov`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4').
 
 ### Example Command:
@@ -48,11 +48,13 @@ turnvoice -u https://www.youtube.com/watch?v=AmC9SmCBUj4 -rw arthur.wav -ov cook
 
 ## Pro Tips
 
-### The Art of Choosing a Reference Wav:
-- A 24000, 44100 or 22050 Hz 16-bit, mono wav file of 10-30 seconds is your golden ticket.
+### The Art of Choosing a Reference Wav
+- A 24000, 44100 or 22050 Hz 16-bit mono wav file of 10-30 seconds is your golden ticket. 
+- 24k mono 16 is my default, but I also had voices where I found 44100 32-bit to yield best results
+- I test voices [with this tool](https://github.com/KoljaB/RealtimeTTS/blob/master/tests/coqui_test.py) before rendering
 - Audacity is your friend for adjusting sample rates. Experiment with frame rates for best results!
 
-### Fixed TTS Model Download Folder:
+### Fixed TTS Model Download Folder
 Keep your models organized! Set `COQUI_MODEL_PATH` to your preferred folder.
 
 Windows example:

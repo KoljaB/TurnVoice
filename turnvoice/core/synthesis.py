@@ -1,5 +1,6 @@
 from RealtimeTTS import TextToAudioStream, CoquiEngine
 from moviepy.editor import AudioFileClip
+from .stripsilence import strip_silence
 import shutil
 import time
 import os
@@ -35,13 +36,18 @@ class Synthesis:
         for i in range(tries):
             # Generate a unique filename for each try
             filename = f"{base_filename}_{i}.wav"
+            filename_synthesis_untrimmed = f"{base_filename}_{i}_raw.wav"
 
             if i == 0:
                 print(f"Try {i+1}: Speed: {current_speed} for text {text}")
             else:
                 print(f"try {i+1}: Speed: {current_speed}")
 
-            self.synthesize(text, filename, speed=current_speed)
+            self.synthesize(text, filename_synthesis_untrimmed, speed=current_speed)
+
+            # strip silence from the synthesized audio
+            strip_silence(filename_synthesis_untrimmed, filename)
+
             sentence_clip = AudioFileClip(filename)
 
             # Calculate and store the duration difference
