@@ -1,4 +1,4 @@
-# TurnVoice 🎬
+# TurnVoice
 
 A command-line tool to replace voices in youtube videos.
 
@@ -8,7 +8,7 @@ A command-line tool to replace voices in youtube videos.
 pip install turnvoice
 ```
 
-For a speedier experience, prepare your [CUDA](https://pytorch.org/get-started/locally/) environment:
+For faster rendering prepare your [CUDA](https://pytorch.org/get-started/locally/) environment:
 
 **CUDA 11.8:**
 ```
@@ -20,7 +20,7 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://downl
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://download.pytorch.org/whl/cu211
 ```
 
-## Usage 🎮
+## Usage
 
 ```bash
 turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video Filename>
@@ -31,8 +31,8 @@ turnvoice -u <YouTube Video URL> -rw <Reference WAV File> -ov <Output Video File
 - `-u`, `--url`: (required) The YouTube video URL you want to transform.
 - `-l`, `--language`: The language for transcription and synthesis (default: 'en').
 - `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads').
-- `-sd`, `--synthesis_directory`: Secret lab for tts synthesis audio files (default: 'synthesis').
-- `-e`, `--extract`: To extract or not to extract audio directly from the video? That is the question. False can lead to better quality but also increase likelihood of errors.
+- `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis').
+- `-e`, `--extract`: Extract audio directly from the video? False downloads separate files which often leads to better quality but can also increase likelihood of errors (default: 'true').
 - `-rw`, `--reference_wav`: Your chosen voice in wav format (24000 Hz, 16 bit)
 - `-ov`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4').
 
@@ -44,9 +44,9 @@ Ever wanted Arthur Morgan to narrate a cooking tutorial? Here's how:
 turnvoice -u https://www.youtube.com/watch?v=AmC9SmCBUj4 -rw arthur.wav -ov cooking_with_arthur.mp4
 ```
 
-*This example needs a arthur.wav clone wav file in the same directory. May magically work when executed from the test directory though.*
+*This example needs a arthur.wav clone wav file in the same directory. Works when executed from the tests directory.*
 
-## Pro Tips 🧙‍♂️
+## Pro Tips
 
 ### The Art of Choosing a Reference Wav:
 - A 24000, 44100 or 22050 Hz 16-bit, mono wav file of 10-30 seconds is your golden ticket.
@@ -60,13 +60,13 @@ Windows example:
 setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 ```
 
-## Future Improvements 🚀
+## Future Improvements
 
 - **Optional Translation**: Polyglot? Coming soon!
 - **Optimized Synthesis**: Reducing the synthesis tries for faster results.
 - **Voice Cloning from YouTube**: Imagine cloning voices directly from other videos!
 
-## License 📜
+## License
 
 TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml). 
 
