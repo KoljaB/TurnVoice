@@ -1,6 +1,6 @@
 # TurnVoice
 
-A command-line tool that transforms voices in YouTube videos and offers additional translation capabilities.  
+A command-line tool that transforms voices in YouTube videos with additional translation capabilities.  
 
 Replaces the entire audio track of the video with a newly generated voice. As a result, all original sounds, including music and ambient noises, are replaced by silence, leaving only the new voice track. This approach ensures clarity in the newly generated voice but means that other audio elements from the original video will not be present in the output.
 
