@@ -1,6 +1,18 @@
 # TurnVoice
 
-A command-line tool that replace voices in youtube videos and can also translate.
+A command-line tool that transforms voices in YouTube videos and offers additional translation capabilities.  
+
+Replaces the entire audio track of the video with a newly generated voice. As a result, all original sounds, including music and ambient noises, are replaced by silence, leaving only the new voice track. This approach ensures clarity in the newly generated voice but means that other audio elements from the original video will not be present in the output.
+
+## Source Quality
+
+- delivers best results with YouTube videos featuring clear spoken content, such as educational videos and podcasts
+- requires a high-quality, clean source WAV file for effective voice cloning. 
+
+## Known Issues
+
+- does not achieve perfect lip synchronization, esp when translating
+- occasionally, the synthesis might introduce unexpected noises or distortions in the audio
 
 ## Installation 
 
@@ -76,6 +88,7 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 
 ## Future Improvements
 
+- **Diarization**: Replace voices of multiple speakers.
 - **Optimized Synthesis**: Reducing the synthesis tries for faster results.
 - **Voice Cloning from YouTube**: Imagine cloning voices directly from other videos!
 
