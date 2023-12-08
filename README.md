@@ -1,13 +1,13 @@
 # TurnVoice
 
-A command-line tool to **transform voices** in YouTube videos with additional **translation** capabilities.  
+A command-line tool in beta state to **transform voices** in YouTube videos with additional **translation** capabilities.  
 
 ## What to expect
 
 Replaces the entire audio track of the video with a newly generated voice. As a result, all original sounds, including music and ambient noises, are **replaced by silence**, leaving only the new voice track. This approach ensures **clarity** in the newly generated voice but means that other audio elements from the original video will be absent in the output.  
 
 - might not always achieve perfect lip synchronization, especially when translating to a different language
-- translation feature is currently in beta (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
+- translation feature is currently in very alpha state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got WAY better reducing artifacts with the new v0.0.30 algo)
 
 ## Source Quality
