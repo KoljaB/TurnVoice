@@ -34,7 +34,7 @@ class Synthesis:
         self.stream.feed(text)
         self.stream.play(output_wavfile=filename, muted=True)
 
-    def safe_synthesize(self,
+    def hallucination_free_synthesis(self,
                         text: str, 
                         filename: str,
                         speed: float = 1.0, 
@@ -121,59 +121,6 @@ class Synthesis:
 
         return None           
 
-    def safe_synthesize2(self,
-                        text: str, 
-                        filename: str,
-                        speed: float = 1.0, 
-                        max_last_word_distance: float = 0.35,
-                        max_levenshtein_distance: float = 0.9,
-                        max_jaro_winkler_distance: float = 0.9, 
-                        tries: int = 3):
-        
-        if os.path.exists(filename):
-            os.remove(filename)
-        
-        best_attempt = None
-        best_average_distance = -1
-        attempts_data = []
-
-        for attempt in range(tries):
-            try:
-                self.synthesize(text, filename, speed)
-                filename_trimmed = f"{filename}_trimmed.wav"
-                strip_silence(filename, filename_trimmed)
-
-                _, _, _, last_word, lev, jaro = verify_synthesis(
-                    filename_trimmed, text,
-                    levenshtein_threshold=max_levenshtein_distance,
-                    jaro_winkler_threshold=max_jaro_winkler_distance,
-                    last_word_threshold=max_last_word_distance)
-
-                print(f"Attempt {attempt + 1}: Last Word: {last_word:.2f}, Lev: {lev:.2f}, Jaro: {jaro:.2f}")
-                attempts_data.append((filename_trimmed, lev, jaro))
-
-                if last_word < max_last_word_distance and lev > max_levenshtein_distance and jaro > max_jaro_winkler_distance:
-                    return filename_trimmed
-
-            except PermissionError as e:
-                print(f"Synthesis attempt {attempt + 1} failed due to a permission error. Retrying...")
-
-            time.sleep(0.5)
-
-        # Selecting the best attempt based on average distance
-        for data in attempts_data:
-            filename_attempt, lev, jaro = data
-            average_distance = (lev + jaro) / 2
-            if average_distance > best_average_distance:
-                best_average_distance = average_distance
-                best_attempt = filename_attempt
-
-        if best_attempt:
-            print(f"Selected best attempt based on average distance: {best_attempt}")
-            return best_attempt
-
-        return None        
-        
     def synthesize_duration(self, text, base_filename, desired_duration, desired_accuracy=0.05, tries=5, use_stable=True):
         """
         Perform a safe synthesis with a desired duration and accuracy.
@@ -189,8 +136,13 @@ class Synthesis:
         if os.path.exists(base_filename):
             os.remove(base_filename)
 
+        max_last_word_distance = 0.25
+        if use_stable:
+            # compensate for stable's lacking last word distance preciseness
+            max_last_word_distance = 0.35
+
         # Synthesize and process the audio
-        self.safe_synthesize(text, synthesis_file, speed=1.0, max_last_word_distance=0.25, max_levenshtein_distance=0.9, max_jaro_winkler_distance=0.9, use_stable=use_stable)
+        self.hallucination_free_synthesis(text, synthesis_file, speed=1.0, max_last_word_distance=max_last_word_distance, max_levenshtein_distance=0.9, max_jaro_winkler_distance=0.9, use_stable=use_stable)
         
         # we start with speed 1.0
         optimal_speed = 1.0

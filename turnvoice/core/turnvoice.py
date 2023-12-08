@@ -8,7 +8,7 @@ import argparse
 import time
 import os
 
-USE_STABLE = True
+USE_STABLE = False
 
 def process_video(
         url_or_id: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -111,7 +111,7 @@ def process_video(
 
     # synthesis (text to speech) of the sentences incl fitting length of synthesized audio to the original audio
     print (f"[{(time.time() - start):.1f}s] synthesizing audio...")
-    synthesis.synthesize_sentences(sentences, synthesis, synthesis_directory, start)
+    synthesis.synthesize_sentences(sentences, synthesis, synthesis_directory, start, use_stable=USE_STABLE)
     #synthesis.synthesize_sentences(sentences, synthesis, synthesis_directory, start, use_stable=USE_STABLE)
 
     with AudioFileClip(audio_file) as audio_clip:
@@ -150,16 +150,16 @@ def main():
 
     # URL as both positional and optional argument
     parser.add_argument('url', nargs='?', type=str, help='URL or ID of the YouTube video. (Positional)')
-    parser.add_argument('-u', '--url', dest='url_optional', type=str, help='URL of the YouTube video. (Optional)')
+    parser.add_argument('-t', '--turn', dest='source', type=str, help='Input source. Currently only URL or ID of YouTube videos supported. (Optional)')
 
     # Language as both positional and optional argument
     parser.add_argument('language', nargs='?', type=str, default='', help='Language code for transcription. (Positional)')
     parser.add_argument('-l', '--language', dest='language_optional', type=str, help='Language code for transcription. (Optional)')
 
+    parser.add_argument('-v', '--voice', type=str, default='male.wav', help='Reference audio file for voice synthesis.')
     parser.add_argument('-d', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
     parser.add_argument('-s', '--synthesis_directory', type=str, default='synthesis', help='Directory to save synthesized audio files.')
     parser.add_argument('-e', '--extractoff', action='store_true', help='Disables extraction of audio from the video file.')
-    parser.add_argument('-r', '--reference_wav', type=str, default='reference.wav', help='Reference audio file for voice synthesis.')
     parser.add_argument('-o', '--output_video', type=str, default='final_cut.mp4', help='Filename for the output video with synthetic voice.')
 
     args = parser.parse_args()
