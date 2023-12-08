@@ -15,6 +15,10 @@ Replaces the entire audio track of the video with a newly generated voice. As a 
 - delivers best results with YouTube videos featuring **clear spoken** content (podcasts, educational videos)
 - requires a high-quality, **clean** source WAV file for effective voice cloning 
 
+## Prerequisites
+
+You need to have [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed for pitchpreserve timestretching audios)
+
 ## Installation 
 
 ```
