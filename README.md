@@ -43,7 +43,7 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://downl
 turnvoice [-u] <YouTube Video URL|ID> [-l] <Translation Language> -r <Reference WAV File> -o <Output Video Filename>
 ```
 
-For example, this is musk with female (default) voice:
+For example, this is musk's voice replaced with the male default voice:
 ```bash
 turnvoice RK91Ji6GCZ8
 ```
