@@ -96,9 +96,9 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 - **Diarization**: Replace voices of multiple speakers.
 - **TTS Voice variety**: Add OpenAI TTS, Azure and Elevenlabs as voice sources.
 - **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. 
-- **Optimized Synthesis**: Reducing the synthesis tries for faster results.
 - **Voice Cloning from YouTube**: Cloning voices directly from other videos!
 - **Speed that thing up**: Imagine feeding a youtube stream and getting a "realtime" translation stream (with strong GPU we can aim at ~10-20s latency)
+- **Open up the CLI**: Allow local Videos, Audios and even Textfiles as Input: turnvoice "Hello World"
 
 ## License
 
