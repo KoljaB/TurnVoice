@@ -1,10 +1,11 @@
 from moviepy.editor import AudioFileClip
-from turnvoice.core.fragtokenizer import create_synthesizable_fragments
-from turnvoice.core.transcribe import transcribe, extract_words
+from turnvoice.core.fragtokenizer import create_synthesizable_fragments, merge_short_sentences
+from turnvoice.core.transcribe import faster_transcribe, stable_transcribe, extract_words
 from turnvoice.core.stripsilence import strip_silence
 from turnvoice.core.download import fetch_youtube
 from turnvoice.core.synthesis import Synthesis
 from turnvoice.core.word import Word
+from turnvoice.core.verify import verify_synthesis
 from pydub import AudioSegment
 import unittest
 import shutil
@@ -66,7 +67,8 @@ class TestTranscript(unittest.TestCase):
 
     def test_transcription(self):
         # Test the accuracy of transcription
-        segments, info = transcribe(self.transcribe_test_audio_file)
+        segments, info = stable_transcribe(self.transcribe_test_audio_file)
+        #segments, info = faster_transcribe(self.transcribe_test_audio_file)
         self.assertIsNotNone(segments)
         self.assertIsNotNone(info)
 
@@ -106,7 +108,40 @@ class TestFrag(unittest.TestCase):
             {"text": "Hello world!", "start": 0.0, "end": 1.1},
             {"text": "This is a test.", "start": 1.5, "end": 3.5}
         ]
+
+        # print (f"Input words: {words}")
+        # print (f"Output sentences: {sentences}")
+        # print (f"Expected sentences: {expected_sentences}")
+
         self.assertEqual(sentences, expected_sentences)
+
+    def test_merge(self):
+        # Setup: Create a list of sentence dictionaries
+        sentences = [
+            {"text": "This is", "start": 0.0, "end": 1.0},
+            {"text": "a short sentence.", "start": 1.2, "end": 2.2},
+            {"text": "Here is", "start": 3.0, "end": 4.0},
+            {"text": "another one.", "start": 4.2, "end": 5.2}
+        ]
+
+        # print (f"Input sentences: {sentences}")
+
+        # Execution: Call merge_short_sentences
+        gap_duration = 0.5
+        min_sentence_duration = 1.5
+        merged_sentences = merge_short_sentences(sentences, gap_duration, min_sentence_duration)
+
+        # Verification: Check if the sentences are correctly merged
+        expected_sentences = [
+            {"text": "This is a short sentence.", "start": 0.0, "end": 2.2},
+            {"text": "Here is another one.", "start": 3.0, "end": 5.2}
+        ]
+
+        # print (f"Input sentences: {sentences}")
+        # print (f"Output sentences: {merged_sentences}")
+        # print (f"Expected sentences: {expected_sentences}")
+
+        self.assertEqual(merged_sentences, expected_sentences)
 
 
 
@@ -118,19 +153,21 @@ class TestSynthesis(unittest.TestCase):
 
         # Define test parameters
         text = "This is a test sentence for synthesis. We will see if the synthesized audio is of the desired duration."
-        base_filename = "test_synthesis"
+        base_filename = "this_is_a_test.wav"
         desired_duration = 6.0  # In seconds
 
         # Execution: Call synthesize_duration
         synthesized_file = synthesis.synthesize_duration(
             text=text,
             base_filename=base_filename,
-            desired_duration=desired_duration
+            desired_duration=desired_duration,
+            use_stable=True
         )
 
         # Verification: Check if the synthesized audio duration is close to the desired duration
-        synthesized_clip = AudioFileClip(synthesized_file)
-        duration_difference = abs(synthesized_clip.duration - desired_duration)
+        with AudioFileClip(synthesized_file) as synthesized_clip:
+            duration_difference = abs(synthesized_clip.duration - desired_duration)
+            
         self.assertTrue(duration_difference < 0.5)  # Tolerance of 0.5 seconds
 
         # # Cleanup: Remove the synthesized file
@@ -179,7 +216,30 @@ class TestStripSilence(unittest.TestCase):
     def tearDownClass(cls):
         # Cleanup: Remove the output audio files
         import os
+        if os.path.exists(cls.output_audio_file):
+            os.remove(cls.output_audio_file)
+        if os.path.exists("turnvoice/tests/audio/stripsilence_test2_out.wav"):
+            os.remove("turnvoice/tests/audio/stripsilence_test2_out.wav")
+
+
+class TestVerifySynthesis(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.input_audio_file = "turnvoice/tests/audio/synthesis_verify.wav"
+
+    def test_verify_synthesis(self):
+        last_word_is_fine, levenshtein_is_fine, jaro_winkler_is_fine, last_word_distance, levenshtein_sim, jaro_winkler_sim = verify_synthesis(self.input_audio_file, 
+            "Hey guys. These here are realtime spoken words based on OpenAI text synthesis.",
+            use_stable=False)
+
+        assert last_word_is_fine
+        assert levenshtein_is_fine
+        assert jaro_winkler_is_fine
+
+    @classmethod
+    def tearDownClass(cls):
+        # Cleanup: Remove the output audio files
+        import os
         # if os.path.exists(cls.output_audio_file):
-        #     os.remove(cls.output_audio_file)
-        # if os.path.exists("turnvoice/tests/audio/stripsilence_test2_out.wav"):
-        #     os.remove("turnvoice/tests/audio/stripsilence_test2_out.wav")
+        #     os.remove(cls.output_audio_file)      

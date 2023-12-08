@@ -15,7 +15,8 @@ def create_synthesizable_fragments(
         words,
         gap_duration: float = 1.0,
         break_characters = start_break_characters,
-        no_break_words = start_no_break_words):
+        no_break_words = start_no_break_words
+        ):
     """
     Analyze a list of Word objects and create synthesizable fragments (sentences) based on certain rules.
 
@@ -24,6 +25,7 @@ def create_synthesizable_fragments(
     gap_duration (float): The minimum duration of a gap between words to consider it as a sentence break. Default is 1.0 seconds.
     break_characters (tuple): Characters that typically indicate the end of a sentence.
     no_break_words (list of str): Abbreviations or acronyms that should not be treated as sentence breaks.
+    min_sentence_duration (float): The minimum duration of a sentence to be considered standalone. Default is 1.5 seconds.
 
     Returns:
     list: A list of dictionaries, each containing the 'text', 'start', and 'end' keys representing each sentence fragment.
@@ -70,3 +72,45 @@ def create_synthesizable_fragments(
                 current_sentence = ""  
 
     return sentences
+
+def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
+    """
+    Merges short sentences with adjacent sentences based on gap duration and sentence duration.
+
+    Args:
+    sentences (list): List of sentence dictionaries.
+    gap_duration (float): The minimum duration of a gap to consider for merging.
+    min_sentence_duration (float): The minimum duration of a sentence to be considered standalone.
+
+    Returns:
+    list: Updated list of sentence dictionaries after merging.
+    """
+
+    # Step 1: Determine which sentences need to be merged with their previous ones.
+    merge_with_previous = [False] * len(sentences)
+
+    for i in range(1, len(sentences)):
+        current_duration = sentences[i]["end"] - sentences[i]["start"]
+        prev_duration = sentences[i - 1]["end"] - sentences[i - 1]["start"]
+        gap_to_prev = sentences[i]["start"] - sentences[i - 1]["end"]
+
+        # set flag if matches conditions (short sentence and small gap)
+        if (current_duration < min_sentence_duration or prev_duration < min_sentence_duration) and gap_to_prev < gap_duration:
+            merge_with_previous[i] = True
+
+    # Step 2: Perform the actual merging based on the merge_with_previous flags.
+    merged_sentences = []
+    i = 0
+
+    while i < len(sentences):
+        if merge_with_previous[i]:
+            # Merge with the previous sentence.
+            merged_sentences[-1]["text"] += " " + sentences[i]["text"]
+            merged_sentences[-1]["end"] = sentences[i]["end"]
+        else:
+            # Add the sentence as a new entry if it's not being merged.
+            merged_sentences.append(sentences[i])
+        
+        i += 1
+
+    return merged_sentences

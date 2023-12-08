@@ -39,6 +39,10 @@ def fetch_youtube(
     audio_file = video_file.replace(video_extension, ".mp3") 
     video_file_muted = video_file.replace(video_extension, f"_muted{video_extension}") 
 
+    if audio_file and os.path.exists(audio_file) and video_file_muted and os.path.exists(video_file_muted):
+        print(f"Files '{audio_file}' and '{video_file_muted}' already exist, skipping download")
+        return audio_file, video_file_muted
+
     if extract:
         # extract audio from video
         video_clip = VideoFileClip(video_file)
@@ -82,4 +86,4 @@ def fetch_youtube(
 
             os.rename(video_file_muted_download, video_file_muted)
 
-    return video_file, audio_file, video_file_muted
+    return audio_file, video_file_muted

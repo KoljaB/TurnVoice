@@ -56,7 +56,7 @@ turnvoice RK91Ji6GCZ8 es
    *leaving this out keeps the source video language*
 - `-d`, `--download_directory`: Where to save the video downloads (default: 'downloads')
 - `-s`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
-- `-e`, `--extract`: Use with -e to extract audio directly from the video (may lead to lower quality but can reduce likelihood of errors)
+- `-e`, `--extractoff`: Use with -e to disable extract audio directly from the video (may lead to higher quality while also increasing likelihood of errors)
 - `-r`, `--reference_wav`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
 - `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
 
@@ -90,8 +90,11 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 ## Future Improvements
 
 - **Diarization**: Replace voices of multiple speakers.
+- **TTS Voice variety**: Add OpenAI TTS, Azure and Elevenlabs as voice sources.
+- **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. 
 - **Optimized Synthesis**: Reducing the synthesis tries for faster results.
-- **Voice Cloning from YouTube**: Imagine cloning voices directly from other videos!
+- **Voice Cloning from YouTube**: Cloning voices directly from other videos!
+- **Speed that thing up**: Imagine feeding a youtube stream and getting a "realtime" translation stream (with strong GPU we can aim at ~10-20s latency)
 
 ## License
 

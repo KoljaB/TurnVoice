@@ -1,5 +1,6 @@
 from transformers import pipeline, AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
+import gc
 
 # Set the device
 device = torch.cuda.current_device() if torch.cuda.is_available() else -1
@@ -34,26 +35,38 @@ def find_language_token(shortcut: str) -> str:
             return language['token']
     return None
 
+pipelines = {}
+
+def get_pipeline(source: str, target: str):
+    global pipelines
+    pipeline_key = f"{source}->{target}"
+
+    if pipeline_key not in pipelines:
+        src_token = find_language_token(source)
+        tgt_token = find_language_token(target)
+
+        if not src_token or not tgt_token:
+            raise ValueError("Invalid source or target language shortcut.")
+
+        # Load the tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(model_name, src_lang=src_token, tgt_lang=tgt_token)
+
+        # Create the translation pipeline
+        device = torch.cuda.current_device() if torch.cuda.is_available() else -1
+        translator = pipeline('translation', model=model, tokenizer=tokenizer, src_lang=src_token, tgt_lang=tgt_token, device=device)
+
+        pipelines[pipeline_key] = translator
+
+    return pipelines[pipeline_key]
+
 def translate(text: str, source: str = "en", target: str = "de") -> str:
-    # Get the source and target language tokens
-    src_token = find_language_token(source)
-    tgt_token = find_language_token(target)
+    translator = get_pipeline(source, target)
 
-    if not src_token or not tgt_token:
-        raise ValueError("Invalid source or target language shortcut.")
-
-    # Load the tokenizer with source and target language tokens
-    tokenizer = AutoTokenizer.from_pretrained(model_name, src_lang=src_token, tgt_lang=tgt_token)
-
-    # Create the translation pipeline
-    translator = pipeline('translation', model=model, tokenizer=tokenizer, src_lang=src_token, tgt_lang=tgt_token, device=device)
-
-    # Translate the text
+    # Perform translation
     translated_text = translator(text, max_length=128)
     translated_text = translated_text[0]['translation_text']
-
-    #print (f"Translated from language {source} to {target}: text \"{text}\" to \"{translated_text}\"")
     print (f"Translated \"{text}\" to \"{translated_text}\"")
+
     return translated_text
 
 def shortcut_to_name(shortcut: str) -> str:
@@ -62,3 +75,18 @@ def shortcut_to_name(shortcut: str) -> str:
             return language['name']
 
     return 'Unknown'
+
+def translate_model_unload():
+    global model, pipelines
+    if model:
+        del model
+        torch.cuda.empty_cache()
+        gc.collect()
+        from numba import cuda
+        device = cuda.get_current_device()
+        device.reset()
+        model = None
+        pipelines = {}
+        print("Translation model unloaded successfully.")
+    else:
+        print("Translation model is not loaded.")
