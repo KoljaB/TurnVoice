@@ -1,4 +1,7 @@
 moviepy==1.0.3
 yt-dlp==2023.11.16
 faster_whisper==0.10.0
+stable-ts==2.13.6
 realtimetts==0.3.35
+textdistance==4.6.0
+soundfile==0.12.1
