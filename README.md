@@ -1,6 +1,6 @@
 # TurnVoice
 
-A command-line tool in beta state to **transform voices** in YouTube videos with additional **translation** capabilities.  
+A command-line tool (currently in beta) to **transform voices** in YouTube videos with additional **translation** capabilities.  
 
 ## What to expect
 
