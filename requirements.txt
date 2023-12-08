@@ -5,3 +5,4 @@ stable-ts==2.13.6
 realtimetts==0.3.35
 textdistance==4.6.0
 soundfile==0.12.1
+pyrubberband==0.3.0

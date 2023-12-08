@@ -37,6 +37,8 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://downl
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://download.pytorch.org/whl/cu211
 ```
 
+Installation in a virtual environment is recommended.
+
 ## Usage
 
 ```bash
