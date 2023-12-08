@@ -114,4 +114,4 @@ And if you've got a cool feature idea or just want to say hi, drop me a line on
 - [Reddit](https://www.reddit.com/user/Lonligrin)  
 - [EMail](mailto:kolja.beigel@web.de)  
 
-Don't forget to leave a star.
+🌟 if you like this library please star the repo 🌟 
