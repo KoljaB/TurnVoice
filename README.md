@@ -1,13 +1,11 @@
 # TurnVoice
 
-A command-line tool (currently in beta) to **transform voices** in YouTube videos with additional **translation** capabilities.  
+A command-line tool (currently in pre-alpha) to **transform voices** in YouTube videos with additional **translation** capabilities.  
 
 ## What to expect
 
-TurnVoice replaces the entire audio track of the video with a newly generated voice. As a result, all original sounds, including music and ambient noises, are **replaced by silence**, leaving only the new voice track. This approach ensures **clarity** in the newly generated voice but means that other audio elements from the original video will be absent in the output.  
-
 - might not always achieve perfect lip synchronization, especially when translating to a different language
-- translation feature is currently in very alpha state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
+- translation feature is currently in experimental prototype state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got WAY better reducing artifacts with the new v0.0.30 algo)
 
 ## Source Quality
@@ -18,6 +16,8 @@ TurnVoice replaces the entire audio track of the video with a newly generated vo
 ## Prerequisites
 
 You need to have [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed for pitchpreserve timestretching audios)
+
+You need to have [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed to use audio preservation
 
 ## Installation 
 
@@ -57,22 +57,25 @@ turnvoice RK91Ji6GCZ8 es
 
 ### Parameters Explained:
 
-- `-u`, `--url`: (required) The YouTube video ID or URL you want to transform
+- `-i`, `--in`: (required) The YouTube video ID or URL you want to transform
 - `-l`, `--language`: Language to translate to (supported: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko)
    *leaving this out keeps the source video language*
 - `-d`, `--download_directory`: Where to save the video downloads (default: 'downloads')
 - `-s`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
 - `-e`, `--extractoff`: Use with -e to disable extract audio directly from the video (may lead to higher quality while also increasing likelihood of errors)
-- `-r`, `--reference_wav`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
+- `-v`, `--voice`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
 - `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
+- `-c`, `--clean_audio`: No preserve of original audio in the final video. Returns clean synthesis
+- `-from`, `--from`: Time to start processing the video from. (Optional)
+- `-to`, `--to`: Time to stop processing the video at. (Optional)
 
-You can leave out -u and -l as first parameters.
+You can leave out -i and -l as first parameters.
 
 ### Example Command:
 
 Ever wanted Arthur Morgan to narrate a cooking tutorial? Here's how:
 
-turnvoice AmC9SmCBUj4 -r arthur.wav -o cooking_with_arthur.mp4
+turnvoice AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 
 
 *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
@@ -95,12 +98,13 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 
 ## Future Improvements
 
-- **Diarization**: Replace voices of multiple speakers.
+- **Voice replacement**: Strip out the vocal track and recompose, so we preserve original background audio (i guess with spleeter)
+- **Diarization**: Speaker Diarize and allow multiple voice change (maybe with cython/whisper-diarization)
 - **TTS Voice variety**: Add OpenAI TTS, Azure and Elevenlabs as voice sources.
-- **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. 
-- **Voice Cloning from YouTube**: Cloning voices directly from other videos!
-- **Speed that thing up**: Imagine feeding a youtube stream and getting a "realtime" translation stream (with strong GPU we can aim at ~10-20s latency)
-- **Open up the CLI**: Allow local Videos, Audios and even Textfiles as Input: turnvoice "Hello World"
+- **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. Better logic than simply transcribe the frags.
+- **Voice Cloning from YouTube**: Cloning voices directly from other videos.
+- **Speed up to realtiem**: Feed streams and get a "realtime" (translated) stream with voice of choice
+- **Open up the CLI**: Allow local Videos, Audios and even Textfiles as Input until down to turnvoice "Hello World"
 
 ## License
 
@@ -116,4 +120,4 @@ And if you've got a cool feature idea or just want to say hi, drop me a line on
 - [Reddit](https://www.reddit.com/user/Lonligrin)  
 - [EMail](mailto:kolja.beigel@web.de)  
 
-🌟 if you like this library please star the repo 🌟 
+If you like the repo please leave a star ✨ 🌟 ✨

@@ -1,0 +1,9 @@
+conda update -n base -c conda-forge conda
+conda install cudatoolkit=11.8
+conda create -n spleeter python=3.10.13
+conda init
+conda activate spleeter
+conda install -c conda-forge ffmpeg libsndfile rubberband
+pip install turnvoice
+pip install spleeter
+pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
