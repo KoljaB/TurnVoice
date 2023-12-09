@@ -9,11 +9,11 @@ A command-line tool (currently in pre-alpha) to **transform voices** in YouTube 
 
 ## Prerequisites
 
-You need to have [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed for pitchpreserve timestretching audios)
+- [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed to pitchpreserve timestretch audios)
 
-You need to have [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed to use audio preservation (install python 3.8 and then run 'pipx install spleeter --python /path/to/python3.8')
+- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed (needed for audio preservation to split vocals, install python 3.8 and then run 'pipx install spleeter --python /path/to/python3.8')
 
-To replace specific voices a huggingface access token in env variable HF_ACCESS_TOKEN is needed to download the pyannote.audio speaker diarization model (see diarize.py).
+- huggingface access token in env variable HF_ACCESS_TOKEN (needed for identifying speakers to download the pyannote.audio speaker diarization model, see diarize.py)
 
 ## Installation 
 
