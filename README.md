@@ -4,8 +4,8 @@ A command-line tool (currently in pre-alpha) to **transform voices** in YouTube 
 
 ## New Features
 
-- **Voice replacement**: Strip out the vocal track and recompose, so we preserve original background audio
-- **Speaker diarization**: We can now replace only one specific voice from a video 
+- **Voice replacement**: Strips out vocal track and recomposes to preserve original background audio
+- **Speaker diarization**: Replace specific speaker voice from a video 
 
 ## Prerequisites
 
