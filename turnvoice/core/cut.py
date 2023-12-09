@@ -125,6 +125,22 @@ def split_audio(file_path, output_path):
 
     return (vocals_path, accompaniment_path) if exists(vocals_path) and exists(accompaniment_path) else (None, None)
 
+def cut_video_to_duration(video_filename, output_filename, duration):
+    try:
+        # Load the video clip
+        video_clip = VideoFileClip(video_filename)
+
+        # Set the duration of the video clip
+        final_clip = video_clip.subclip(0, duration)
+
+        # Write the final video
+        final_clip.write_videofile(output_filename, codec='libx264', audio_codec='aac')
+
+        return final_clip.duration
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 def merge_audios(audio1_filename, audio2_filename, timestamps, output_filename):
     try:
@@ -165,200 +181,3 @@ def merge_audios(audio1_filename, audio2_filename, timestamps, output_filename):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
-    
-
-
-
-# from moviepy.editor import AudioFileClip, concatenate_audioclips, CompositeAudioClip
-
-# def merge_audios(audio1_filename, audio2_filename, timestamps, output_filename, crossfade_duration):
-#     try:
-#         # Load the audio files
-#         audio_clip1 = AudioFileClip(audio1_filename)
-#         audio_clip2 = AudioFileClip(audio2_filename)
-
-#         # Crossfade duration in seconds (convert milliseconds to seconds)
-#         crossfade_duration = crossfade_duration / 1000  # Convert ms to seconds
-
-#         # Create full-length silent clips as placeholders
-#         silent_clip1 = get_silent_clip(audio_clip1.duration)
-#         silent_clip2 = get_silent_clip(audio_clip2.duration)
-
-#         # Segments list for audio1 and audio2
-#         segments1 = []
-#         segments2 = []
-
-#         next_start = 0
-#         for start_time, end_time in timestamps:
-#             subclip1 = audio_clip1.subclip(next_start, start_time + crossfade_duration / 2)
-#             subclip1 = subclip1.fadeout(crossfade_duration)
-
-#             if next_start > 0:
-#                 subclip1 = subclip1.fadein(crossfade_duration)
-
-#             silence1 = silent_clip1.subclip(start_time, end_time)
-
-#             next_start = end_time - crossfade_duration / 2
-
-#         if next_start < audio_clip1.duration:
-#             segments1.append(audio_clip1.subclip(next_start))
-
-
-
-#         next_start = 0
-#         for start_time, end_time in timestamps:
-#             subclip2 = audio_clip2.subclip(next_start, start_time + crossfade_duration / 2)
-
-
-#         # Start of the next segment
-#         next_start = 0
-
-#         # Iterate over the timestamps
-#         for start_time, end_time in timestamps:
-#             # Add segments to audio1 and audio2 with crossfade effects
-#             subclip1 = audio_clip1.subclip(next_start, start_time).fadein(crossfade_duration / 2).fadeout(crossfade_duration / 2)
-#             silence1 = silent_clip1.subclip(start_time, end_time)
-
-#             silence2 = silent_clip2.subclip(next_start, start_time)
-#             subclip2 = audio_clip2.subclip(start_time, end_time).fadein(crossfade_duration / 2).fadeout(crossfade_duration / 2)
-            
-#             segments1.append(subclip1)
-#             segments1.append(silence1)
-
-#             segments2.append(silence2)
-#             segments2.append(subclip2)
-
-#             # Update the start of the next segment
-#             next_start = end_time
-
-#         # Add remaining part from audio1
-#         if next_start < audio_clip1.duration:
-#             segments1.append(audio_clip1.subclip(next_start))
-#             segments2.append(silent_clip2.subclip(next_start))
-
-#         # Combine segments for each audio
-#         combined_audio1 = concatenate_audioclips(segments1)
-#         combined_audio2 = concatenate_audioclips(segments2)
-
-#         # Create a composite audio clip
-#         final_audio = CompositeAudioClip([combined_audio1, combined_audio2])
-
-#         # Write the final audio file
-#         final_audio.write_audiofile(output_filename)
-
-#         return "Audio merged successfully."
-
-#     except Exception as e:
-#         print(f"An error occurred: {e}")
-#         return None
-
-
-
-# def merge_audio(audio1_filename, audio2_filename, timestamps, output_filename, crossfade_duration):
-#     try:
-#         # Load the audio files
-#         audio_clip1 = AudioFileClip(audio1_filename)
-#         audio_clip2 = AudioFileClip(audio2_filename)
-
-#         # Crossfade duration in seconds (convert milliseconds to seconds)
-#         crossfade_duration = crossfade_duration / 1000  # Convert ms to seconds
-
-#         # Create full-length silent clips as placeholders
-#         silent_clip1 = get_silent_clip(audio_clip1.duration)
-#         silent_clip2 = get_silent_clip(audio_clip2.duration)
-
-#         # Segments list for audio1 and audio2
-#         segments1 = []
-#         segments2 = []
-
-#         # Start of the next segment
-#         next_start = 0
-
-#         # Iterate over the timestamps
-#         for start_time, end_time in timestamps:
-#             # Adjust start and end times for crossfade
-#             adjusted_start_time = max(0, start_time - crossfade_duration / 2)
-#             adjusted_end_time = min(end_time + crossfade_duration / 2, audio_clip2.duration)
-
-#             # Add segments to audio1 and audio2
-#             segments1.append(audio_clip1.subclip(next_start, adjusted_start_time))
-            
-#             segments1.append(silent_clip1.subclip(adjusted_start_time, adjusted_end_time))
-
-#             segments2.append(silent_clip2.subclip(next_start, adjusted_start_time))
-#             segments2.append(audio_clip2.subclip(adjusted_start_time, adjusted_end_time))
-
-#             # Update the start of the next segment
-#             next_start = adjusted_end_time
-
-#         # Add remaining part from audio1
-#         if next_start < audio_clip1.duration:
-#             segments1.append(audio_clip1.subclip(next_start))
-#             segments2.append(silent_clip2.subclip(next_start))
-
-#         # Combine segments for each audio
-#         combined_audio1 = concatenate_audioclips(segments1)
-#         combined_audio2 = concatenate_audioclips(segments2)
-
-#         # Create a composite audio clip
-#         final_audio = CompositeAudioClip([combined_audio1, combined_audio2])
-
-#         # Write the final audio file
-#         final_audio.write_audiofile(output_filename)
-
-#         return "Audio merged successfully."
-
-#     except Exception as e:
-#         print(f"An error occurred: {e}")
-#         return None
-
-# # def merge_audio_with_crossfade(audio1_filename, audio2_filename, timestamps, output_filename, crossfade_duration):
-# #     try:
-# #         # Load the audio files
-# #         audio_clip1 = AudioFileClip(audio1_filename)
-# #         audio_clip2 = AudioFileClip(audio2_filename)
-
-# #         # Crossfade duration in seconds (convert milliseconds to seconds)
-# #         crossfade_duration = crossfade_duration / 1000  # Convert ms to seconds
-
-# #         # Initialize an empty list for audio segments
-# #         segments = []
-
-# #         # Start of the next segment
-# #         next_start = 0
-
-# #         # Iterate over the timestamps
-# #         for start_time, end_time in timestamps:
-# #             # Adjust start and end times for crossfade
-# #             adjusted_start_time = max(0, start_time - crossfade_duration / 2)
-# #             adjusted_end_time = min(end_time + crossfade_duration / 2, audio_clip2.duration)
-
-# #             # Add segment from audio1 with fadeout if there is a gap
-# #             if adjusted_start_time > next_start:
-# #                 segment = audio_clip1.subclip(next_start, adjusted_start_time).fx(audio_fadeout, crossfade_duration / 2)
-# #                 segments.append(segment)
-
-# #             # Add segment from audio2 with fadein and fadeout
-# #             segment = audio_clip2.subclip(adjusted_start_time, adjusted_end_time)
-# #             segment = segment.fx(audio_fadein, crossfade_duration / 2).fx(audio_fadeout, crossfade_duration / 2)
-# #             segments.append(segment)
-
-# #             # Update the start of the next segment
-# #             next_start = adjusted_end_time
-
-# #         # Add remaining part from audio1 with fadein if any
-# #         if next_start < audio_clip1.duration:
-# #             segment = audio_clip1.subclip(next_start).fx(audio_fadein, crossfade_duration / 2)
-# #             segments.append(segment)
-
-# #         # Combine all segments
-# #         final_audio = concatenate_audioclips(segments)
-
-# #         # Write the final audio file
-# #         final_audio.write_audiofile(output_filename)
-
-# #         return "Audio merged successfully."
-
-# #     except Exception as e:
-# #         print(f"An error occurred: {e}")
-# #         return None    

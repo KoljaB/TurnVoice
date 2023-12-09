@@ -2,6 +2,7 @@ from .transcribe import stable_transcribe, unload_stable_model, faster_transcrib
 from .cut import create_composite_audio, overlay_audio_on_video, merge_video_audio, merge_audios, split_audio
 from .fragtokenizer import create_synthesizable_fragments, merge_short_sentences
 from .download import fetch_youtube_extract
+from .diarize import diarize, print_speakers
 from moviepy.editor import AudioFileClip
 from .toseconds import time_to_seconds
 from .synthesis import Synthesis
@@ -35,7 +36,9 @@ def process_video(
         output_video: str = "final_cut.mp4",
         clean_audio: bool = False,
         start: str = None,
-        end: str = None):
+        end: str = None,
+        analysis: bool = False,
+        speaker_number: str = ""):
     """
     Video Processing Workflow covering downloading, audio extraction,
     transcription, synthesis, and video combination.
@@ -51,6 +54,11 @@ def process_video(
     extract (bool): Whether to extract audio from the video file.
     reference_audio (str): Reference audio file for voice synthesis.
     output_video (str): Filename for the output video with synthetic voice.
+    clean_audio (bool): No preserve of original audio in the final video. Returns clean synthesis.
+    start (str): Time to start processing the video from.
+    end (str): Time to stop processing the video at.
+    analysis (bool): Prints analysis of the video.
+    speaker_number (str): Speaker number to be turned.
     """
 
     processing_start_time = time.time()
@@ -103,6 +111,14 @@ def process_video(
         print (f"[{(time.time() - processing_start_time):.1f}s] splitting audio...")
         vocal_path, accompaniment_path = split_audio(audio_file, download_directory)
 
+    if analysis or len(speaker_number) > 0:
+        print (f"[{(time.time() - processing_start_time):.1f}s] analyzing audio...")
+        speakers = diarize(audio_file)
+        print_speakers(speakers)
+        if analysis:
+            synthesis.close()
+            return
+
     # transcription (speech to text) of the audio
     if USE_STABLE:
         print (f"[{(time.time() - processing_start_time):.1f}s] transcribing audio (stable_whisper)...", end="", flush=True)
@@ -128,9 +144,24 @@ def process_video(
         end_time = time_to_seconds(end)
         words = [word for word in words if word.end <= end_time]
 
+    # filter words by speaker number
+    if len(speaker_number) > 0:
+        new_words = []
+        for speaker_number_diarized, speaker in enumerate(speakers, start=1):
+            if str(speaker_number_diarized) == speaker_number:
+                print (f"filtering words by speaker number {speaker_number}...")
+                for word in words:
+                    middle_word = (word.start + word.end) / 2
+                    for segment in speaker["segments"]:
+                        if segment["start"] <= middle_word <= segment["end"]:
+                            new_words.append(word)
+                            break
+        words = new_words
+
     if len(words) == 0:
         print (f"[{(time.time() - processing_start_time):.1f}s] no words to be turned, aborting...")
-        exit(0)
+        synthesis.close()
+        return
 
     print (f"[{(time.time() - processing_start_time):.1f}s] {len(words)} words found...")
 
@@ -146,7 +177,6 @@ def process_video(
         unload_stable_model()
     else:
         unload_faster_model()
-    
 
     # translation if requested
     if len(language) > 0 and detected_input_language != language:
@@ -203,29 +233,6 @@ def process_video(
                     merged_time_stamps.append((start, end))
         
         time_stamps = merged_time_stamps
-        # # time_stamps = []
-        # # for sentence in sentences:
-        # #     time_stamps.append((sentence["start"], sentence["end"]))
-        # time_stamps = []
-        # for sentence in sentences:
-        #     # correction time for miscalculations of word timestamps
-        #     word_timestamp_correction = 0.3
-
-        #     start = max(0, sentence["start"] - word_timestamp_correction)
-        #     end = min(sentence["end"] + word_timestamp_correction, duration)
-        #     time_stamps.append((start, end))
-
-            
-
-        # for index, time_stamp in enumerate(time_stamps):
-        #     if index >= 0:
-        #         start, end = time_stamp
-        #         start_prev, end_prev = time_stamps[index-1]
-        #         if start < end_prev:
-        #             # tbd: merge
-        #             start = end_prev
-        #             time_stamps[index] = (start, end)
-
 
         # merge the synthesized audio with the original audio
         final_cut_audio_merged = "final_cut_audio_merged.wav"
@@ -272,14 +279,16 @@ def main():
     parser.add_argument('-l', '--language', dest='language_optional', type=str, help='Language code for transcription. (Optional)')
 
     parser.add_argument('-v', '--voice', type=str, default='male.wav', help='Reference audio file for voice synthesis.')
-    parser.add_argument('-d', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
-    parser.add_argument('-s', '--synthesis_directory', type=str, default='synthesis', help='Directory to save synthesized audio files.')
-    parser.add_argument('-e', '--extractoff', action='store_true', help='Disables extraction of audio from the video file.')
     parser.add_argument('-o', '--output_video', '-out', type=str, default='final_cut.mp4', help='Filename for the output video with synthetic voice.')
-    parser.add_argument('-c', '--clean_audio', action='store_true', help='No preserve of original audio in the final video. Returns clean synthesis.')
+    parser.add_argument('-a', '--analysis', action='store_true', help='Prints analysis of the video.')
+    parser.add_argument('-s', '--speaker', type=str, default='', help='Speaker number to be turned. (Optional)')
     parser.add_argument('-from', '--from', dest='_from', type=str, help='Time to start processing the video from. (Optional)')
     parser.add_argument('-to', '--to', type=str, help='Time to stop processing the video at. (Optional)')
-
+    parser.add_argument('-dd', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
+    parser.add_argument('-sd', '--synthesis_directory', type=str, default='synthesis', help='Directory to save synthesized audio files.')
+    parser.add_argument('-e', '--extractoff', action='store_true', help='Disables extraction of audio from the video file.')
+    parser.add_argument('-c', '--clean_audio', action='store_true', help='No preserve of original audio in the final video. Returns clean synthesis.')
+    
     args = parser.parse_args()
 
     url = args.source if args.source is not None else args.url
@@ -303,7 +312,9 @@ def main():
         output_video=args.output_video,
         clean_audio=args.clean_audio,
         start=args._from,
-        end=args.to
+        end=args.to,
+        analysis=args.analysis,
+        speaker_number=args.speaker
     )
 
 if __name__ == "__main__":

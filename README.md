@@ -2,22 +2,18 @@
 
 A command-line tool (currently in pre-alpha) to **transform voices** in YouTube videos with additional **translation** capabilities.  
 
-## What to expect
+## New Features
 
-- might not always achieve perfect lip synchronization, especially when translating to a different language
-- translation feature is currently in experimental prototype state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
-- occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got WAY better reducing artifacts with the new v0.0.30 algo)
-
-## Source Quality
-
-- delivers best results with YouTube videos featuring **clear spoken** content (podcasts, educational videos)
-- requires a high-quality, **clean** source WAV file for effective voice cloning 
+- **Voice replacement**: Strip out the vocal track and recompose, so we preserve original background audio
+- **Speaker diarization**: We can now replace only one specific voice from a video 
 
 ## Prerequisites
 
 You need to have [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed for pitchpreserve timestretching audios)
 
 You need to have [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed to use audio preservation (install python 3.8 and then run 'pipx install spleeter --python /path/to/python3.8')
+
+To replace specific voices a huggingface access token in env variable HF_ACCESS_TOKEN is needed to download the pyannote.audio speaker diarization model (see diarize.py).
 
 ## Installation 
 
@@ -60,25 +56,39 @@ turnvoice RK91Ji6GCZ8 es
 - `-i`, `--in`: (required) The YouTube video ID or URL you want to transform
 - `-l`, `--language`: Language to translate to (supported: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko)
    *leaving this out keeps the source video language*
-- `-d`, `--download_directory`: Where to save the video downloads (default: 'downloads')
-- `-s`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
-- `-e`, `--extractoff`: Use with -e to disable extract audio directly from the video (may lead to higher quality while also increasing likelihood of errors)
 - `-v`, `--voice`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
 - `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
+- `-a`, `--analysis`: Enable analysis mode. Only generates the transcription and speaker diarization, doesn't render the video
+- `-s`, `--speaker`: Speaker number to be turned. Speakers are sorted by amount of speech. Perform --analysis before.
+- `-from`, `--from`: Time to start processing the video from
+- `-to`, `--to`: Time to stop processing the video at
+- `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads')
+- `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
+- `-e`, `--extractoff`: Use with -e to disable extract audio directly from the video (may lead to higher quality while also increasing likelihood of errors)
 - `-c`, `--clean_audio`: No preserve of original audio in the final video. Returns clean synthesis
-- `-from`, `--from`: Time to start processing the video from. (Optional)
-- `-to`, `--to`: Time to stop processing the video at. (Optional)
 
 You can leave out -i and -l as first parameters.
 
 ### Example Command:
 
-Ever wanted Arthur Morgan to narrate a cooking tutorial? Here's how:
+Arthur Morgan narrating a cooking tutorial:
 
+```bash
 turnvoice AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
-
+```
 
 *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
+
+## What to expect
+
+- might not always achieve perfect lip synchronization, especially when translating to a different language
+- translation feature is currently in experimental prototype state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
+- occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got WAY better reducing artifacts with the new v0.0.30 algo)
+
+## Source Quality
+
+- delivers best results with YouTube videos featuring **clear spoken** content (podcasts, educational videos)
+- requires a high-quality, **clean** source WAV file for effective voice cloning 
 
 ## Pro Tips
 
@@ -98,8 +108,6 @@ setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 
 ## Future Improvements
 
-- **Voice replacement**: Strip out the vocal track and recompose, so we preserve original background audio (i guess with spleeter)
-- **Diarization**: Speaker Diarize and allow multiple voice change (maybe with cython/whisper-diarization)
 - **TTS Voice variety**: Add OpenAI TTS, Azure and Elevenlabs as voice sources.
 - **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. Better logic than simply transcribe the frags.
 - **Voice Cloning from YouTube**: Cloning voices directly from other videos.
