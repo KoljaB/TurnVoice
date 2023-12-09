@@ -17,7 +17,7 @@ A command-line tool (currently in pre-alpha) to **transform voices** in YouTube 
 
 You need to have [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed for pitchpreserve timestretching audios)
 
-You need to have [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed to use audio preservation
+You need to have [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed to use audio preservation (install python 3.8 and then run 'pipx install spleeter --python /path/to/python3.8')
 
 ## Installation 
 
