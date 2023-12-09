@@ -60,6 +60,7 @@ turnvoice RK91Ji6GCZ8 es
 - `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
 - `-a`, `--analysis`: Enable analysis mode. Only generates the transcription and speaker diarization, doesn't render the video
 - `-s`, `--speaker`: Speaker number to be turned. Speakers are sorted by amount of speech. Perform --analysis before.
+- `-smax`, `--speaker_max`: Maximal numbers of speakers in the video. Set to 2 or 3 for better results in multiple speaker scenarios.
 - `-from`, `--from`: Time to start processing the video from
 - `-to`, `--to`: Time to stop processing the video at
 - `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads')

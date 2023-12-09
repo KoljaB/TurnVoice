@@ -4,7 +4,7 @@ import os
 
 access_token = os.getenv("HF_ACCESS_TOKEN")
 
-def diarize(audio_file):
+def diarize(audio_file, max_speakers = 0):
     pipeline = Pipeline.from_pretrained(
         "pyannote/speaker-diarization-3.1", 
         use_auth_token=access_token)
@@ -14,7 +14,10 @@ def diarize(audio_file):
     pipeline.to(torch.device("cuda"))
 
     # apply pretrained pipeline
-    diarization = pipeline(audio_file, num_speakers = 2)
+    if max_speakers > 0:
+        diarization = pipeline(audio_file, num_speakers = max_speakers)
+    else:
+        diarization = pipeline(audio_file)
 
     # print the result
     results = []

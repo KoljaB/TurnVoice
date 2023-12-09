@@ -38,7 +38,8 @@ def process_video(
         start: str = None,
         end: str = None,
         analysis: bool = False,
-        speaker_number: str = ""):
+        speaker_number: str = "",
+        max_speakers: int = 0):
     """
     Video Processing Workflow covering downloading, audio extraction,
     transcription, synthesis, and video combination.
@@ -113,7 +114,7 @@ def process_video(
 
     if analysis or len(speaker_number) > 0:
         print (f"[{(time.time() - processing_start_time):.1f}s] analyzing audio...")
-        speakers = diarize(audio_file)
+        speakers = diarize(audio_file, max_speakers)
         print_speakers(speakers)
         if analysis:
             synthesis.close()
@@ -282,6 +283,7 @@ def main():
     parser.add_argument('-o', '--output_video', '-out', type=str, default='final_cut.mp4', help='Filename for the output video with synthetic voice.')
     parser.add_argument('-a', '--analysis', action='store_true', help='Prints analysis of the video.')
     parser.add_argument('-s', '--speaker', type=str, default='', help='Speaker number to be turned. (Optional)')
+    parser.add_argument('-smax', '--speaker_max', type=int, default='0', help='Maximal numbers of speakers in the video. (Optional)')
     parser.add_argument('-from', '--from', dest='_from', type=str, help='Time to start processing the video from. (Optional)')
     parser.add_argument('-to', '--to', type=str, help='Time to stop processing the video at. (Optional)')
     parser.add_argument('-dd', '--download_directory', type=str, default='downloads', help='Directory to save downloaded files.')
@@ -314,7 +316,8 @@ def main():
         start=args._from,
         end=args.to,
         analysis=args.analysis,
-        speaker_number=args.speaker
+        speaker_number=args.speaker,
+        max_speakers=args.speaker_max,
     )
 
 if __name__ == "__main__":
