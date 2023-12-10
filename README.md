@@ -9,11 +9,18 @@ A command-line tool (currently in pre-alpha) to **transform voices** in YouTube 
 
 ## Prerequisites
 
-- [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed (needed to pitchpreserve timestretch audios)
+- [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^1] 
+- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^2]
+- Huggingface conditions accepted for [Speaker Diarization](https://huggingface.co/pyannote/speaker-diarization-3.1) and [Segmentation](https://huggingface.co/pyannote/segmentation-3.0)
+- Huggingface access token in env variable HF_ACCESS_TOKEN [^3]
 
-- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed (needed for audio preservation to split vocals, install python 3.8 and then run 'pipx install spleeter --python /path/to/python3.8')
+[^1]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow
+[^2]: Deezer's Spleeter is needed to split vocals for original audio preservation
+[^3]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio
 
-- huggingface access token in env variable HF_ACCESS_TOKEN (needed for identifying speakers to download the pyannote.audio speaker diarization model, see diarize.py)
+> [!TIP]
+> - For Deezer's Spleeter CLI install [Python 3.8](https://www.python.org/downloads/), then run `pipx install spleeter --python /path/to/python3.8` (pip install pipx)
+> - Set your [HF token](https://huggingface.co/settings/tokens) with `setx HF_ACCESS_TOKEN "your_token_here"
 
 ## Installation 
 
