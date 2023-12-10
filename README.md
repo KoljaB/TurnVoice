@@ -21,19 +21,14 @@ A command-line tool (currently in pre-alpha) to **transform voices** in YouTube 
 pip install turnvoice
 ```
 
-For faster rendering prepare your [CUDA](https://pytorch.org/get-started/locally/) environment:
-
-**CUDA 11.8:**
-```
-pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-```
-
-**CUDA v12.1:**
-```
-pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://download.pytorch.org/whl/cu211
-```
-
-Installation in a virtual environment is recommended.
+> [!TIP]
+> For faster rendering with GPU prepare your [CUDA](https://pytorch.org/get-started/locally/) environment after installation:
+> 
+> ***For CUDA 11.8***  
+> `pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118`  
+>   
+> ***For CUDA 12.1***  
+> `pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://download.pytorch.org/whl/cu211`  
 
 ## Usage
 
