@@ -77,7 +77,7 @@ You can leave out -i and -l as first parameters.
 
 - might not always achieve perfect lip synchronization, especially when translating to a different language
 - translation feature is currently in experimental prototype state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
-- occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got WAY better reducing artifacts with the new v0.0.30 algo)
+- occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got **way** better reducing artifacts with the new v0.0.30 algo)
 
 ## Source Quality
 
@@ -85,6 +85,24 @@ You can leave out -i and -l as first parameters.
 - requires a high-quality, **clean** source WAV file for effective voice cloning 
 
 ## Pro Tips
+
+First perform a speaker analysis:
+
+### How to exchange a single speaker
+
+First perform a speaker analysis with -a parameter:
+
+```bash
+turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -a
+```
+
+Then select a speaker from the list with -s parameter
+
+```bash
+turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -s 2
+```
+
+
 
 ### The Art of Choosing a Reference Wav
 - A 24000, 44100 or 22050 Hz 16-bit mono wav file of 10-30 seconds is your golden ticket. 
