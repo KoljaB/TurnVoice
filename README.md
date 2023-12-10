@@ -43,12 +43,12 @@ pip install turnvoice
 turnvoice [-u] <YouTube URL|ID> [-l] <Translation Language> -v <Voice File> -o <Output File>
 ```
 
-For example, this is musk's voice replaced with the male default voice:
+For example:
 ```bash
 turnvoice RK91Ji6GCZ8
 ```
 
-Same translated to spanish:
+Translate to spanish:
 ```bash
 turnvoice RK91Ji6GCZ8 es
 ```
