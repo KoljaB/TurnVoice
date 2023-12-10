@@ -58,7 +58,7 @@ turnvoice RK91Ji6GCZ8 es
    *leaving this out keeps the source video language*
 - `-v`, `--voice`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
 - `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
-- `-a`, `--analysis`: Enable analysis mode. Only generates the transcription and speaker diarization, doesn't render the video
+- `-a`, `--analysis`: Perform speaker analysis. Generates the speaker diarization, doesn't render the video.
 - `-s`, `--speaker`: Speaker number to be turned. Speakers are sorted by amount of speech. Perform --analysis before.
 - `-smax`, `--speaker_max`: Maximal numbers of speakers in the video. Set to 2 or 3 for better results in multiple speaker scenarios.
 - `-from`, `--from`: Time to start processing the video from
@@ -78,7 +78,8 @@ Arthur Morgan narrating a cooking tutorial:
 turnvoice AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 ```
 
-*This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
+> [!NOTE]
+> *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
 
 ## What to expect
 
