@@ -43,15 +43,16 @@ pip install turnvoice
 turnvoice [-u] <YouTube URL|ID> [-l] <Translation Language> -v <Voice File> -o <Output File>
 ```
 
-For example:
+### Example Command:
+
+Arthur Morgan narrating a cooking tutorial:
+
 ```bash
-turnvoice RK91Ji6GCZ8
+turnvoice AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 ```
 
-Translate to spanish:
-```bash
-turnvoice RK91Ji6GCZ8 es
-```
+> [!NOTE]
+> *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
 
 ### Parameters Explained:
 
@@ -71,17 +72,6 @@ turnvoice RK91Ji6GCZ8 es
 - `-c`, `--clean_audio`: No preserve of original audio in the final video. Returns clean synthesis
 
 You can leave out -i and -l as first parameters.
-
-### Example Command:
-
-Arthur Morgan narrating a cooking tutorial:
-
-```bash
-turnvoice AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
-```
-
-> [!NOTE]
-> *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
 
 ## What to expect
 
