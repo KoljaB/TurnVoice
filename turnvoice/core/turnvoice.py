@@ -71,6 +71,7 @@ def process_video(
     from .fragtokenizer import create_synthesizable_fragments, merge_short_sentences
     from .download import fetch_youtube_extract, check_youtube, local_file_extract, ensure_youtube_url
     from .diarize import diarize, print_speakers, write_speaker_timefiles, speaker_files_exist, import_time_file, filter_speakers, time_to_seconds
+    from .translate import translate, translate_model_unload
     from os.path import basename, exists, join, splitext   
     from moviepy.editor import AudioFileClip
     from .synthesis import Synthesis
@@ -322,13 +323,13 @@ def process_video(
 
     # translation if requested
     if len(p_language) > 0 and detected_input_language != p_language:
-        from .translate import translate, translate_model_unload
 
         print (f"[{(time.time() - processing_start_time):.1f}s] translating from {detected_input_language} to {p_language}...")
 
         # translate every sentence
         translated_sentences = []
         for sentence in sentences:
+            print (f"Translating \"{sentence['text']}\" from {detected_input_language} to {p_language}...")
             translated_sentence = translate(sentence["text"], source=detected_input_language, target=p_language)
             sentence["text"] = translated_sentence
             translated_sentences.append(sentence)
