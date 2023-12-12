@@ -162,7 +162,7 @@ turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e openai -v shimmer
 ## Azure Engine
 
 > [!NOTE]
-> To use Azure voices you need the [API Key](https://www.youtube.com/watch?v=HgYE2nJPaHA&t=57s) for SpeechService resource in AZURE_SPEECH_KEY and the [region identifier](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/regions) in AZURE_SPEECH_REGION
+> To use Azure voices you need the [API Key](https://www.youtube.com/watch?v=HgYE2nJPaHA&t=57s) for SpeechService resource in **AZURE_SPEECH_KEY** and the [region identifier](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/regions) in **AZURE_SPEECH_REGION**
 
 <details>
 <summary>To use voices from Azure:</summary>
