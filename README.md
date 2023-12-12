@@ -87,6 +87,9 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 
 Coqui engine is the default engine if no other engine is specified with the -e parameter.
 
+<details>
+<summary>To use voices from Coqui:</summary>
+
 #### Voices (-v parameter)
 
 Submit path to one or more audiofiles containing 16 bit 24kHz mono source material as reference wavs.
@@ -109,6 +112,7 @@ Windows example:
 ```bash
 setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
 ```
+</details>
 
 ## Elevenlabs Engine
 
@@ -119,6 +123,9 @@ All voices are synthesized with the multilingual-v1 model.
 
 > [!CAUTION]
 > Elevenlabs is a pricy API. Focus on short videos. Don't let a work-in-progress script like this run unattended on a pay-per-use API. Bugs could be very annoying when occurring at the end of a pricy long rendering process. 
+
+<details>
+<summary>To use voices from Elevenlabs:</summary>
 
 #### Voices (-v parameter)
 
@@ -131,11 +138,15 @@ turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e elevenlabs -v Giovanni
 
 > [!TIP]
 > Test rendering with a free engine like coqui first before using pricy ones.
+</details>
 
 ## OpenAI Engine
 
 > [!NOTE]
 > To use OpenAI TTS voices you need the [API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**
+
+<details>
+<summary>To use voices from OpenAI:</summary>
 
 #### Voice (-v parameter)
 
@@ -145,11 +156,15 @@ Example:
 ```
 turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e openai -v shimmer
 ```
+</details>
 
 ## Azure Engine
 
 > [!NOTE]
 > To use Azure voices you need the [API Key](https://www.youtube.com/watch?v=HgYE2nJPaHA&t=57s) for SpeechService resource in AZURE_SPEECH_KEY and the [region identifier](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/regions) in AZURE_SPEECH_REGION
+
+<details>
+<summary>To use voices from Azure:</summary>
 
 #### Voices (-v parameter)
 
@@ -159,8 +174,12 @@ Example:
 ```
 turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e azure -v ChristopherNeural
 ```
+</details>
 
 ## System Engine
+
+<details>
+<summary>To use system voices:</summary>
 
 #### Voices (-v parameter)
 
@@ -170,6 +189,7 @@ Example:
 ```
 turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 ```
+</details>
 
 ## What to expect
 
