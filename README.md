@@ -174,7 +174,7 @@ turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 
 - might not always achieve perfect lip synchronization, especially when translating to a different language
 - speaker detection does not work that well, probably doing something wrong or or perhaps the tech is not yet ready to be reliable
-- translation feature is currently in experimental prototype state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
+- translation feature is currently in experimental prototype state (powered by deep-translate) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got **way** better reducing artifacts with the new v0.0.30 algo)
 - spleeter might get confused when a spoken voice and backmusic with singing are present together in the source audio
 
@@ -209,7 +209,7 @@ turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -s 2
 
 ## License
 
-TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml) and [NLLB-200 CC-BY-NC License](https://huggingface.co/facebook/nllb-200-distilled-600M) (these are OpenSource NonCommercial licenses). 
+TurnVoice is proudly under the [Coqui Public Model License 1.0.0](https://coqui.ai/cpml). 
 
 ## Let's Make It Fun! 🎉
 
