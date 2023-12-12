@@ -172,6 +172,7 @@ turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 
 ## What to expect
 
+- early alpha / work-in-progress, so bugs might occur (please report, need to be aware to fix)
 - might not always achieve perfect lip synchronization, especially when translating to a different language
 - speaker detection does not work that well, probably doing something wrong or or perhaps the tech is not yet ready to be reliable
 - translation feature is currently in experimental prototype state (powered by deep-translate) and still produces very imperfect results
