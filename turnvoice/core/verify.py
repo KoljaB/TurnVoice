@@ -1,4 +1,4 @@
-from .transcribe import stable_transcribe, faster_transcribe, extract_words
+from .transcribe import faster_transcribe, extract_words
 from moviepy.editor import AudioFileClip
 import textdistance
 import re
@@ -15,7 +15,7 @@ def normalize_text(text):
     
     return text
 
-def verify_synthesis(input_file, expected_text, levenshtein_threshold=0.85, jaro_winkler_threshold=0.85, last_word_threshold=0.5, use_stable=True):
+def verify_synthesis(input_file, expected_text, levenshtein_threshold=0.85, jaro_winkler_threshold=0.85, last_word_threshold=0.5):
     """
     Verify that the input text was synthesized correctly.
 
@@ -26,12 +26,8 @@ def verify_synthesis(input_file, expected_text, levenshtein_threshold=0.85, jaro
 
     # transcribe text
     # unsure which delivers more precise timestamps, stable seems to get the first word start right more often, but faster seems to get the last word end better
-    if use_stable:
-        print (f"Using stable transcribe for verification of {input_file}")
-        segs, _ = stable_transcribe(input_file, language=None, model="large-v2")
-    else:
-        print (f"Using faster transcribe for verification of {input_file}")
-        segs, _ = faster_transcribe(input_file, language=None, model="large-v2")
+    print (f"Using faster transcribe for verification of {input_file}")
+    segs, _ = faster_transcribe(input_file, language=None, model="large-v2")
 
     words = extract_words(segs)
     if len(words) == 0:

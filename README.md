@@ -1,22 +1,22 @@
 # TurnVoice
 
-A command-line tool (currently in pre-alpha) to **transform voices** in YouTube videos with additional **translation** capabilities.  
+A command-line tool to **transform voices** in YouTube videos with additional **translation** capabilities.[^1] 
 
 ## New Features
 
-- **Voice replacement**: Strips out vocal track and recomposes to preserve original background audio
-- **Speaker diarization**: Replace specific speaker voice from a video 
+- **Elevenlabs**, **OpenAI TTS**, **Azure**, **Coqui TTS** and System voices for redubbing
+- replace specific speaker or multiple speaker voices (work in progress)
+- process local files
+- preserve original background audio  
+
+> *more infos 👉 [release notes](https://github.com/KoljaB/TurnVoice/releases)*
 
 ## Prerequisites
 
-- [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^1] 
-- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^2]
+- [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^2] 
+- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^3]
 - Huggingface conditions accepted for [Speaker Diarization](https://huggingface.co/pyannote/speaker-diarization-3.1) and [Segmentation](https://huggingface.co/pyannote/segmentation-3.0)
-- Huggingface access token in env variable HF_ACCESS_TOKEN [^3]
-
-[^1]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow
-[^2]: Deezer's Spleeter is needed to split vocals for original audio preservation
-[^3]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio
+- Huggingface access token in env variable HF_ACCESS_TOKEN [^4]
 
 > [!TIP]
 > - For Deezer's Spleeter CLI install [Python 3.8](https://www.python.org/downloads/), then run `pipx install spleeter --python /path/to/python3.8` (pip install pipx)
@@ -40,7 +40,7 @@ pip install turnvoice
 ## Usage
 
 ```bash
-turnvoice [-u] <YouTube URL|ID> [-l] <Translation Language> -v <Voice File> -o <Output File>
+turnvoice [-i <YouTube URL|ID|Local Video Path>] [-l <Translation Language>] -v <Voice File(s)> -o <Output File>
 ```
 
 ### Example Command:
@@ -48,36 +48,130 @@ turnvoice [-u] <YouTube URL|ID> [-l] <Translation Language> -v <Voice File> -o <
 Arthur Morgan narrating a cooking tutorial:
 
 ```bash
-turnvoice AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
+turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 ```
 
 > [!NOTE]
-> *This example needs a arthur.wav (or.json) file in the same directory. Works when executed from the tests directory.*
+> *Requires a voice file (e.g., arthur.wav or .json) in the same directory (you find one in the tests directory).*
 
 ### Parameters Explained:
 
-- `-i`, `--in`: (required) The YouTube video ID or URL you want to transform
-- `-l`, `--language`: Language to translate to (supported: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko)
-   *leaving this out keeps the source video language*
-- `-v`, `--voice`: Your chosen voice in wav format (24kHz, 16 bit, mono, ~10-30s)
-- `-o`, `--output_video`: The grand finale video file name (default: 'final_cut.mp4')
-- `-a`, `--analysis`: Perform speaker analysis. Generates the speaker diarization, doesn't render the video.
-- `-s`, `--speaker`: Speaker number to be turned. Speakers are sorted by amount of speech. Perform --analysis before.
-- `-smax`, `--speaker_max`: Maximal numbers of speakers in the video. Set to 2 or 3 for better results in multiple speaker scenarios.
-- `-from`, `--from`: Time to start processing the video from
-- `-to`, `--to`: Time to stop processing the video at
-- `-dd`, `--download_directory`: Where to save the video downloads (default: 'downloads')
-- `-sd`, `--synthesis_directory`: Where to save the text to speech audio files (default: 'synthesis')
-- `-e`, `--extractoff`: Use with -e to disable extract audio directly from the video (may lead to higher quality while also increasing likelihood of errors)
-- `-c`, `--clean_audio`: No preserve of original audio in the final video. Returns clean synthesis
+- `-i`, `--in`: Input video. Accepts a YouTube video URL or ID, or a path to a local video file.
+- `-l`, `--language`: Language for translation. Coqui synthesis supports: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko. Omit to retain the original video language.
+- `-il`, `--input_language`: Language code for transcription, set if automatic detection fails.
+- `-v`, `--voice`: Voices for synthesis. Accepts multiple values to replace more than one speaker.
+- `-o`, `--output_video`: Filename for the final output video (default: 'final_cut.mp4').
+- `-a`, `--analysis`: Print transcription and speaker analysis without synthesizing or rendering the video.
+- `-from`: Time to start processing the video from.
+- `-to`: Time to stop processing the video at.
+- `-e`, `--engine`: Synthesis engine (options: coqui, elevenlabs, azure, openai, system; default: coqui).
+- `-s`, `--speaker`: Speaker number to be transformed.
+- `-snum`, `--num_speakers`: Exact number of speakers in the video, aids in diarization.
+- `-smin`, `--min_speakers`: Minimum number of speakers in the video.
+- `-smax`, `--max_speakers`: Maximum number of speakers in the video.
+- `-dd`, `--download_directory`: Directory for saving downloaded files (default: 'downloads').
+- `-sd`, `--synthesis_directory`: Directory for saving synthesized audio files (default: 'synthesis').
+- `-exoff`, `--extractoff`: Disables extraction of audio from the video file. Downloads audio and video from the internet.
+- `-c`, `--clean_audio`: Removes original audio from the final video, resulting in clean synthesis.
+- `-tf`, `--timefile`: Define timestamp file(s) for processing (functions like multiple --from/--to commands).
 
-You can leave out -i and -l as first parameters.
+Note: `-i` and `-l` can be used as both positional and optional arguments.
+
+## Coqui Engine
+
+Coqui engine is the default engine if no other engine is specified with the -e parameter.
+
+#### Voices (-v parameter)
+
+Submit path to one or more audiofiles containing 16 bit 24kHz mono source material as reference wavs.
+
+Example:
+```
+turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e coqui -v female.wav
+```
+
+#### The Art of Choosing a Reference Wav
+- A 24000, 44100 or 22050 Hz 16-bit mono wav file of 10-30 seconds is your golden ticket. 
+- 24k mono 16 is my default, but I also had voices where I found 44100 32-bit to yield best results
+- I test voices [with this tool](https://github.com/KoljaB/RealtimeTTS/blob/master/tests/coqui_test.py) before rendering
+- Audacity is your friend for adjusting sample rates. Experiment with frame rates for best results!
+
+#### Fixed TTS Model Download Folder
+Keep your models organized! Set `COQUI_MODEL_PATH` to your preferred folder.
+
+Windows example:
+```bash
+setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
+```
+
+## Elevenlabs Engine
+
+> [!NOTE]
+> To use Elevenlabs voices you need the [API Key](https://elevenlabs.io/docs/api-reference/text-to-speech#authentication) stored in env variable **ELEVENLABS_API_KEY**
+
+All voices are synthesized with the multilingual-v1 model.
+
+> [!CAUTION]
+> Elevenlabs is a pricy API. Focus on short videos. Don't let a work-in-progress script like this run unattended on a pay-per-use API. Bugs could be very annoying when occurring at the end of a pricy long rendering process. 
+
+#### Voices (-v parameter)
+
+Submit name(s) of either a generated or predefined voice.
+
+Example:
+```
+turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e elevenlabs -v Giovanni
+```
+
+> [!TIP]
+> Test rendering with a free engine like coqui first before using pricy ones.
+
+## OpenAI Engine
+
+> [!NOTE]
+> To use OpenAI TTS voices you need the [API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**
+
+#### Voice (-v parameter)
+
+Submit name of voice. Currently only one voice for OpenAI supported. Alloy, echo, fable, onyx, nova or shimmer.
+
+Example:
+```
+turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e openai -v shimmer
+```
+
+## Azure Engine
+
+> [!NOTE]
+> To use Azure voices you need the [API Key](https://www.youtube.com/watch?v=HgYE2nJPaHA&t=57s) for SpeechService resource in AZURE_SPEECH_KEY and the [region identifier](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/regions) in AZURE_SPEECH_REGION
+
+#### Voices (-v parameter)
+
+Submit name(s) of either a generated or predefined voice.
+
+Example:
+```
+turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e azure -v ChristopherNeural
+```
+
+## System Engine
+
+#### Voices (-v parameter)
+
+Submit name(s) of voices as string.
+
+Example:
+```
+turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
+```
 
 ## What to expect
 
 - might not always achieve perfect lip synchronization, especially when translating to a different language
+- speaker detection does not work that well, probably doing something wrong or or perhaps the tech is not yet ready to be reliable
 - translation feature is currently in experimental prototype state (powered by Meta's nllb-200-distilled-600m) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got **way** better reducing artifacts with the new v0.0.30 algo)
+- spleeter might get confused when a spoken voice and backmusic with singing are present together in the source audio
 
 ## Source Quality
 
@@ -85,8 +179,6 @@ You can leave out -i and -l as first parameters.
 - requires a high-quality, **clean** source WAV file for effective voice cloning 
 
 ## Pro Tips
-
-First perform a speaker analysis:
 
 ### How to exchange a single speaker
 
@@ -102,29 +194,13 @@ Then select a speaker from the list with -s parameter
 turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -s 2
 ```
 
-
-
-### The Art of Choosing a Reference Wav
-- A 24000, 44100 or 22050 Hz 16-bit mono wav file of 10-30 seconds is your golden ticket. 
-- 24k mono 16 is my default, but I also had voices where I found 44100 32-bit to yield best results
-- I test voices [with this tool](https://github.com/KoljaB/RealtimeTTS/blob/master/tests/coqui_test.py) before rendering
-- Audacity is your friend for adjusting sample rates. Experiment with frame rates for best results!
-
-### Fixed TTS Model Download Folder
-Keep your models organized! Set `COQUI_MODEL_PATH` to your preferred folder.
-
-Windows example:
-```bash
-setx COQUI_MODEL_PATH "C:\Downloads\CoquiModels"
-```
-
 ## Future Improvements
 
-- **TTS Voice variety**: Add OpenAI TTS, Azure and Elevenlabs as voice sources.
 - **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. Better logic than simply transcribe the frags.
 - **Voice Cloning from YouTube**: Cloning voices directly from other videos.
 - **Speed up to realtiem**: Feed streams and get a "realtime" (translated) stream with voice of choice
 - **Open up the CLI**: Allow local Videos, Audios and even Textfiles as Input until down to turnvoice "Hello World"
+- match spoken volume of original voice
 
 ## License
 
@@ -141,3 +217,8 @@ And if you've got a cool feature idea or just want to say hi, drop me a line on
 - [EMail](mailto:kolja.beigel@web.de)  
 
 If you like the repo please leave a star ✨ 🌟 ✨
+
+[^1]: State is work-in-progress (early pre-alpha), so please expect API changes to come and sometimes things not working properly yet. Developed on Python 3.11.4 under Win 10.  
+[^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow
+[^3]: Deezer's Spleeter is needed to split vocals for original audio preservation
+[^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio

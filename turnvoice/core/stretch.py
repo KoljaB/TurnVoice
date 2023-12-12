@@ -15,7 +15,6 @@ def is_rubberband_installed() -> bool:
         return False
 
 if is_rubberband_installed():
-    import pyrubberband as pyrb
     print ("rubberband found")
 else:
     print ("rubberband not installed")
@@ -37,13 +36,18 @@ def time_stretch(input_file: str, output_file: str, stretch_factor: float) -> st
     """
     print (f"time_stretch: {input_file} -> {output_file} with stretch_factor {stretch_factor}")
 
-    # Read the WAV file
-    y, sr = sf.read(input_file)
-    
-    # Apply time-stretching
-    y_stretch = pyrb.time_stretch(y, sr, stretch_factor)
+    # Construct the command as a list of arguments
+    cmd = [
+        'rubberband',
+        '--fine', # Use the R3 (finer) engine
+        '--formant', # Enable formant preservation
+        '--crisp', '6',  # Set the highest level of crispness
+        '--tempo', str(stretch_factor),
+        input_file,
+        output_file
+    ]
 
-    # Write the stretched audio to a new WAV file
-    sf.write(output_file, y_stretch, sr)
+    # Execute the command
+    subprocess.check_call(cmd)
 
     return output_file

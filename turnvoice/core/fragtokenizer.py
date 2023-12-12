@@ -1,7 +1,7 @@
 from .word import Word
 
 # define characters that indicate the end of a sentence.
-start_break_characters = ('.', '!', '?', ',')
+start_break_characters = ('.', '!', '?', ',', '。')
 
 # list of abbreviations and acronyms that shouldn't be treated as sentence breaks.
 start_no_break_words = [
@@ -79,8 +79,8 @@ def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
 
     Args:
     sentences (list): List of sentence dictionaries.
-    gap_duration (float): The minimum duration of a gap to consider for merging.
-    min_sentence_duration (float): The minimum duration of a sentence to be considered standalone.
+    gap_duration (float): The maximum duration of a gap between to sentences to consider for merging.
+    min_sentence_duration (float): The maximum duration of a sentence to be considered standalone.
 
     Returns:
     list: Updated list of sentence dictionaries after merging.
@@ -100,9 +100,8 @@ def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
 
     # Step 2: Perform the actual merging based on the merge_with_previous flags.
     merged_sentences = []
-    i = 0
-
-    while i < len(sentences):
+    
+    for i in range(0, len(sentences)):
         if merge_with_previous[i]:
             # Merge with the previous sentence.
             merged_sentences[-1]["text"] += " " + sentences[i]["text"]
@@ -110,7 +109,5 @@ def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
         else:
             # Add the sentence as a new entry if it's not being merged.
             merged_sentences.append(sentences[i])
-        
-        i += 1
 
     return merged_sentences
