@@ -4,7 +4,7 @@ A command-line tool to **transform voices** in YouTube videos with additional **
 
 https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af99202d7312
 
-<sup>(sorry for the bad video quality, it had to fit under 10MB file size because Github 🤷)</sup> 🎞️[here's a HD version](https://www.youtube.com/watch?v=Rl0WhIax2lM)
+<sup>(sorry for the bad video quality, it had to fit under 10MB file size because Github 🤷)</sup> [🎞️ HD version 🎞️](https://www.youtube.com/watch?v=Rl0WhIax2lM) 
 
 ## New Features
 
