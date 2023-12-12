@@ -44,7 +44,7 @@ pip install turnvoice
 ## Usage
 
 ```bash
-turnvoice [-i <YouTube URL|ID|Local Video Path>] [-l <Translation Language>] -v <Voice File(s)> -o <Output File>
+turnvoice [-i] <YouTube URL|ID|Local Video Path> [-l] <Translation Language> -v <Voice File(s)> -o <Output File>
 ```
 
 ### Example Command:
