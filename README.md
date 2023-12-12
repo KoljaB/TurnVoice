@@ -228,4 +228,4 @@ If you like the repo please leave a star ✨ 🌟 ✨
 [^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow
 [^3]: Deezer's Spleeter is needed to split vocals for original audio preservation
 [^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio
-[^5]: Speaker diarization is done with the pyannote.audio default HF implementation on the vocals track splitted from the original audio
+[^5]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio
