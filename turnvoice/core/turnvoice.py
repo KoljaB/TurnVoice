@@ -38,6 +38,7 @@ def process_video(
         p_min_speakers: int = 0,
         p_max_speakers: int = 0,
         p_time_files: List[str] = [],
+        p_prompt: str = None,
         ):
     """
     Video Processing Workflow covering downloading, audio extraction,
@@ -64,14 +65,16 @@ def process_video(
     p_min_speakers (int): Helps diarization. Specify the minimum number of speakers in the video if you know it in advance.
     p_max_speakers (int): Helps diarization. Specify the maximum number of speakers in the video if you know it in advance.
     p_time_files (List[str]): Define timestamp file(s) for processing (basically performs multiple --from/--to)
+    p_prompt (str): Text prompt for video processing instructions. For example, "speak like a pirate".
     """
 
     from .transcribe import faster_transcribe, unload_faster_model, extract_words
     from .cut import create_composite_audio, overlay_audio_on_video, merge_video_audio, merge_audios, split_audio
-    from .fragtokenizer import create_synthesizable_fragments, merge_short_sentences
+    from .fragtokenizer import create_synthesizable_fragments, merge_short_sentences, create_full_sentences, assign_fragments_to_sentences, start_full_sentence_characters
     from .download import fetch_youtube_extract, check_youtube, local_file_extract, ensure_youtube_url
     from .diarize import diarize, print_speakers, write_speaker_timefiles, speaker_files_exist, import_time_file, filter_speakers, time_to_seconds
     from .translate import translate, translate_model_unload
+    from .prompt import transform_sentences
     from os.path import basename, exists, join, splitext   
     from moviepy.editor import AudioFileClip
     from .synthesis import Synthesis
@@ -232,7 +235,7 @@ def process_video(
                     if is_overlap(word.start, word.end, tstart, tend):
                         new_words.append(word)
                         break
-                else: # TIME_HANDLING_POLICY == "balanced":
+                else: 
                     if word.start >= tstartc and word.end <= tendc:                        
                         new_words.append(word)
                         break
@@ -286,12 +289,33 @@ def process_video(
     # generate synthesizable fragments based on gaps and punctuation
     print (f"[{(time.time() - processing_start_time):.1f}s] creating synthesizable fragments...")
     synthesis.set_language(synthesis_language)
-    sentences = create_synthesizable_fragments(words)
 
-    print (f"[{(time.time() - processing_start_time):.1f}s] merging short sentences from {len(sentences)} sentences...")
-    sentences = merge_short_sentences(sentences, gap_duration=0.75, min_sentence_duration=1.5)
+    sentence_fragments = create_synthesizable_fragments(words)
+    full_sentences = create_synthesizable_fragments(words, break_characters=start_full_sentence_characters)
+    
+    assign_fragments_to_sentences(sentence_fragments, full_sentences)
 
-    print (f"[{(time.time() - processing_start_time):.1f}s] assigning {len(sentences)} merged sentences to speakers...")
+    for sentence in full_sentences:
+        print (f'{sentence["text"]} ({sentence["start"]:.1f}s - {sentence["end"]:.1f}s) contains {len(sentence["sentence_frags"])} fragments: ')
+        for sentence_frag in sentence["sentence_frags"]:
+            print (f'    {sentence_frag["text"]} ({sentence_frag["start"]:.1f}s - {sentence_frag["end"]:.1f}s)')
+
+    if p_prompt:
+        print (f"[{(time.time() - processing_start_time):.1f}s] transforming sentences, applying \"{p_prompt}\"...")
+        transform_sentences(full_sentences, p_prompt)
+
+    for sentence in full_sentences:
+        print (f'{sentence["text"]} ({sentence["start"]:.1f}s - {sentence["end"]:.1f}s) contains {len(sentence["sentence_frags"])} fragments: ')
+        for sentence_frag in sentence["sentence_frags"]:
+            print (f'    {sentence_frag["text"]} ({sentence_frag["start"]:.1f}s - {sentence_frag["end"]:.1f}s)')
+
+    # merging short sentences
+    print (f"[{(time.time() - processing_start_time):.1f}s] merging short sentences from {len(sentence_fragments)} sentences...")
+    sentence_fragments = merge_short_sentences(sentence_fragments, gap_duration=0.75, min_sentence_duration=1.5)
+    print (f"[{(time.time() - processing_start_time):.1f}s] {len(sentence_fragments)} merged sentences created...")
+
+    # if p_prompt:
+    print (f"[{(time.time() - processing_start_time):.1f}s] assigning {len(sentence_fragments)} merged sentences to speakers...")
 
     def calculate_interval_overlap(start1, end1, start2, end2):
         if start2 > end1:
@@ -303,7 +327,7 @@ def process_video(
         return minimum_end_time - maximum_start_time
 
     # assign sentences to speakers
-    for sentence in sentences:
+    for sentence in sentence_fragments:
         max_overlap = 0
         assigned_speaker_index = 0
 
@@ -326,43 +350,38 @@ def process_video(
 
         print (f"[{(time.time() - processing_start_time):.1f}s] translating from {detected_input_language} to {p_language}...")
 
-        # translate every sentence
-        translated_sentences = []
-        for sentence in sentences:
+        for sentence in sentence_fragments:
             print (f"Translating \"{sentence['text']}\" from {detected_input_language} to {p_language}...")
             translated_sentence = translate(sentence["text"], source=detected_input_language, target=p_language)
             sentence["text"] = translated_sentence
-            translated_sentences.append(sentence)
-
-        sentences = translated_sentences
 
         # get rid of translation model to free up VRAM
         translate_model_unload()
 
     # synthesis (text to speech) of the sentences incl fitting length of synthesized audio to the original audio
     print (f"[{(time.time() - processing_start_time):.1f}s] synthesizing audio...")
-    synthesis.synthesize_sentences(sentences, p_synthesis_directory, processing_start_time)
+    synthesis.synthesize_sentences(sentence_fragments, p_synthesis_directory, processing_start_time)
 
     # combine the synthesized audio fragments into one audio file respecting the speech start times of the original audio
     final_cut_audio_path = "final_cut_audio.wav"
     print (f"[{(time.time() - processing_start_time):.1f}s] combining audio...")
 
     # filter sentences with a successful synthesis based on sentence["synthesis_result"] from sentences
-    successful_synthesis_sentences = [sentence for sentence in sentences if sentence["synthesis_result"]]
-    sentences = successful_synthesis_sentences
-    if len(sentences) == 0:
+    successful_synthesis_sentences = [sentence for sentence in sentence_fragments if sentence["synthesis_result"]]
+    sentence_fragments = successful_synthesis_sentences
+    if len(sentence_fragments) == 0:
         print (f"[{(time.time() - processing_start_time):.1f}s] no successful synthesis (no sentences created), aborting...")
         synthesis.close()
         return
     
-    create_composite_audio(sentences, p_synthesis_directory, duration, final_cut_audio_path)
+    create_composite_audio(sentence_fragments, p_synthesis_directory, duration, final_cut_audio_path)
 
     if not p_clean_audio:
         time_stamps = []
         word_timestamp_correction = 0.5
 
         # Initial timestamp adjustment
-        for sentence in sentences:
+        for sentence in sentence_fragments:
             start = max(0, sentence["start"] - word_timestamp_correction)
             end = min(sentence["end"] + word_timestamp_correction, duration)
             time_stamps.append((start, end))
@@ -445,7 +464,8 @@ def main():
     parser.add_argument('-exoff', '--extractoff', action='store_true', help='Disables extraction of audio from the video file. Downloads audio and video files from the internet. (Optional)')
     parser.add_argument('-c', '--clean_audio', action='store_true', help='No preserve of original audio in the final video. Returns clean synthesis. (Optional)')
     parser.add_argument('-tf', '--timefile', nargs='?', help='Define timestamp file(s) for processing (basically performs multiple --from/--to) (Optional)')
-    
+    parser.add_argument('-p', '--prompt', type=str, help='Style prompt for video processing instructions. For example, "speaking style of captain jack sparrow". (Optional)')
+
     args = parser.parse_args()
 
     input_video = args.source if args.source is not None else args.inputvideo
@@ -479,6 +499,7 @@ def main():
         p_min_speakers=args.min_speakers,
         p_max_speakers=args.max_speakers,
         p_time_files=args.timefile,
+        p_prompt=args.prompt,
     )
 
 if __name__ == "__main__":

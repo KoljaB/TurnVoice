@@ -1,6 +1,6 @@
 # TurnVoice
 
-A command-line tool to **transform voices** in YouTube videos with additional **translation** capabilities.[^1] 
+A command-line tool to **transform voices** in YouTube videos with additional **translation** capabilities. [^1] 
 
 https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af99202d7312
 
@@ -8,6 +8,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
 
 ## New Features
 
+- use --prompt to apply custom style changes to the detected sentences like "speaking style of captain jack sparrow" [^6] 
 - **Elevenlabs**, **OpenAI TTS**, **Azure**, **Coqui TTS** and System voices for redubbing
 - replace specific speaker or multiple speaker voices (work in progress)
 - process local files
@@ -79,6 +80,7 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 - `-exoff`, `--extractoff`: Disables extraction of audio from the video file. Downloads audio and video from the internet.
 - `-c`, `--clean_audio`: Removes original audio from the final video, resulting in clean synthesis.
 - `-tf`, `--timefile`: Define timestamp file(s) for processing (functions like multiple --from/--to commands).
+- `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^6]
 
 > [!TIP]
 > `-i` and `-l` can be used as both positional and optional arguments.
@@ -247,7 +249,8 @@ And if you've got a cool feature idea or just want to say hi, drop me a line on
 If you like the repo please leave a star ✨ 🌟 ✨
 
 [^1]: State is work-in-progress (early pre-alpha), so please expect API changes to come and sometimes things not working properly yet. Developed on Python 3.11.4 under Win 10.  
-[^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow
-[^3]: Deezer's Spleeter is needed to split vocals for original audio preservation
-[^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio
-[^5]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio
+[^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow.
+[^3]: Deezer's Spleeter is needed to split vocals for original audio preservation.
+[^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
+[^5]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio.
+[^6]: Uses GPT-4 and generates costs. Needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.

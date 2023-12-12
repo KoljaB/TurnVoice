@@ -3,6 +3,9 @@ from .word import Word
 # define characters that indicate the end of a sentence.
 start_break_characters = ('.', '!', '?', ',', '。')
 
+# define characters that indicate the end of a sentence.
+start_full_sentence_characters = ('.', '!', '?', '。')
+
 # list of abbreviations and acronyms that shouldn't be treated as sentence breaks.
 start_no_break_words = [
     "Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "St.", "Ave.", "Rd.", "Jan.", "Feb.", "Mar.", 
@@ -73,6 +76,50 @@ def create_synthesizable_fragments(
 
     return sentences
 
+def create_full_sentences(
+        words,
+        break_characters=start_full_sentence_characters,
+        no_break_words=start_no_break_words
+        ):
+    """
+    Analyze a list of Word objects and create full sentences based on certain rules.
+
+    Args:
+    words (list of Word): List of Word objects to analyze.
+    break_characters (tuple): Characters that typically indicate the end of a sentence.
+    no_break_words (list of str): Abbreviations or acronyms that should not be treated as sentence breaks.
+
+    Returns:
+    list: A list of dictionaries, each containing the 'text', 'start', and 'end' keys representing each full sentence.
+    """
+
+    sentences = []  # holds full sentences
+    current_sentence = ""  # accumulates words
+    sentence_start_time = 0.0  # start time of a sentence
+
+    for index, word in enumerate(words):
+
+        # if starting a new sentence, record the start time
+        if current_sentence == "":
+            sentence_start_time = word.start
+
+        # add the current word's text to the sentence
+        current_sentence += word.text
+
+        # check if the current word is the last in the list
+        is_last_word = index + 1 == len(words)
+
+        # check conditions to finalize the current sentence
+        if is_last_word or (word.text.endswith(break_characters) and not word.text in no_break_words):
+            sentence_end_time = word.end  # end time of the sentence
+
+            sentences.append({"text": current_sentence.strip(), "start": sentence_start_time, "end": sentence_end_time})
+
+            # reset the current sentence
+            current_sentence = ""  
+
+    return sentences
+
 def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
     """
     Merges short sentences with adjacent sentences based on gap duration and sentence duration.
@@ -96,6 +143,7 @@ def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
 
         # set flag if matches conditions (short sentence and small gap)
         if (current_duration < min_sentence_duration or prev_duration < min_sentence_duration) and gap_to_prev < gap_duration:
+            print (f"Merging sentence {i} (Text: {sentences[i]['text']}) with previous sentence. Sentence duration: {current_duration}, previous duration: {prev_duration}, gap to previous: {gap_to_prev}")
             merge_with_previous[i] = True
 
     # Step 2: Perform the actual merging based on the merge_with_previous flags.
@@ -111,3 +159,36 @@ def merge_short_sentences(sentences, gap_duration, min_sentence_duration):
             merged_sentences.append(sentences[i])
 
     return merged_sentences
+
+def assign_fragments_to_sentences(sentence_fragments, full_sentences):
+    """
+    Assign each sentence fragment to its corresponding full sentence.
+
+    Args:
+    sentence_fragments (list of dict): List of sentence fragments, each containing 'text', 'start', and 'end' keys.
+    full_sentences (list of dict): List of full sentences, each containing 'text', 'start', and 'end' keys.
+
+    Returns:
+    None: The function updates the full_sentences list in place, adding a 'sentence_frags' key to each full sentence.
+    """
+
+    # Iterate over each full sentence
+    print (f"Starting to assign fragments to sentences. {len(full_sentences)} full sentences and {len(sentence_fragments)} fragments.")
+    print (f"All full sentences:")
+    for full_sentence in full_sentences:
+        print (f"Full sentence: {full_sentence['text']}")
+    print (f"All fragments:")
+    for frag in sentence_fragments:
+        print (f"Fragment: {frag['text']}")
+
+
+    for full_sentence in full_sentences:
+
+        full_sentence['sentence_frags'] = []  # Initialize the list of fragments for this full sentence
+
+        # Iterate over each sentence fragment
+        for frag in sentence_fragments:
+            # Check if the fragment belongs to the current full sentence
+            if (frag['start'] >= full_sentence['start'] and frag['end'] <= full_sentence['end']):
+                full_sentence['sentence_frags'].append(frag)
+                frag['full_sentence'] = full_sentence['text']  # Assign the full sentence text to the fragment
