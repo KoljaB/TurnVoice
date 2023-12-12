@@ -21,7 +21,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
 - [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^3]
 > [!TIP]
 > *For Deezer's Spleeter CLI install [Python 3.8](https://www.python.org/downloads/), then run `pipx install spleeter --python /path/to/python3.8` (pip install pipx)*  
-> <sub>Pro-Tipp: don't be an idiot like me and waste hours trying to run spleeter on a somewhat modern python version, just give it it's precious old dinosaur era 3.8 env and move on</sub>
+> <sub>Pro-Tipp: don't be an idiot like me and waste hours trying to run spleeter on a somewhat modern python version, just give it it's precious dinosaur era 3.8 env and move on</sub>
 - Huggingface conditions accepted for [Speaker Diarization](https://huggingface.co/pyannote/speaker-diarization-3.1) and [Segmentation](https://huggingface.co/pyannote/segmentation-3.0)
 - Huggingface access token in env variable HF_ACCESS_TOKEN [^4]
 > [!TIP]
