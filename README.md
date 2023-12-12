@@ -11,6 +11,10 @@ A command-line tool to **transform voices** in YouTube videos with additional **
 
 > *more infos 👉 [release notes](https://github.com/KoljaB/TurnVoice/releases)*
 
+https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af99202d7312
+
+<sup>(sorry for the bad video quality, it had fit under <10MB file size because Github 🤷)</sup>
+
 ## Prerequisites
 
 - [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^2] 
