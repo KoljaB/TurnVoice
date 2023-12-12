@@ -8,7 +8,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
 
 ## New Features
 
-- use --prompt to apply custom style changes to the detected sentences like "speaking style of captain jack sparrow" [^6] 
+- use --prompt ("speaking style of captain jack sparrow") [^6] 
 - **Elevenlabs**, **OpenAI TTS**, **Azure**, **Coqui TTS** and System voices for redubbing
 - replace specific speaker or multiple speaker voices (work in progress)
 - process local files
