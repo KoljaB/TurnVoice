@@ -203,7 +203,7 @@ turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -s 2
 
 - **Tranlation quality**: Add option to translate with OpenAI, DeepL API, other models. Better logic than simply transcribe the frags.
 - **Voice Cloning from YouTube**: Cloning voices directly from other videos.
-- **Speed up to realtiem**: Feed streams and get a "realtime" (translated) stream with voice of choice
+- **Speed up to realtime**: Feed streams and get a "realtime" (translated) stream with voice of choice
 - **Open up the CLI**: Allow local Videos, Audios and even Textfiles as Input until down to turnvoice "Hello World"
 - match spoken volume of original voice
 
