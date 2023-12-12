@@ -79,7 +79,8 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 - `-c`, `--clean_audio`: Removes original audio from the final video, resulting in clean synthesis.
 - `-tf`, `--timefile`: Define timestamp file(s) for processing (functions like multiple --from/--to commands).
 
-Note: `-i` and `-l` can be used as both positional and optional arguments.
+> [!TIP]
+> `-i` and `-l` can be used as both positional and optional arguments.
 
 ## Coqui Engine
 
