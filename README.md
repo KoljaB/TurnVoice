@@ -174,7 +174,7 @@ turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 
 - early alpha / work-in-progress, so bugs might occur (please report, need to be aware to fix)
 - might not always achieve perfect lip synchronization, especially when translating to a different language
-- speaker detection does not work that well, probably doing something wrong or or perhaps the tech is not yet ready to be reliable
+- speaker detection does not work that well, probably doing something wrong or or perhaps the tech[^5] is not yet ready to be reliable
 - translation feature is currently in experimental prototype state (powered by deep-translate) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got **way** better reducing artifacts with the new v0.0.30 algo)
 - spleeter might get confused when a spoken voice and backmusic with singing are present together in the source audio
@@ -228,3 +228,4 @@ If you like the repo please leave a star ✨ 🌟 ✨
 [^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow
 [^3]: Deezer's Spleeter is needed to split vocals for original audio preservation
 [^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio
+[^5]: Speaker diarization is done with the pyannote.audio default HF implementation on the stripped vocals track
