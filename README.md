@@ -136,9 +136,9 @@ Example:
 turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c -e elevenlabs -v Giovanni
 ```
 
+</details>
 > [!TIP]
 > Test rendering with a free engine like coqui first before using pricy ones.
-</details>
 
 ## OpenAI Engine
 
