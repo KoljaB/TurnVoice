@@ -464,7 +464,7 @@ def main():
     parser.add_argument('-exoff', '--extractoff', action='store_true', help='Disables extraction of audio from the video file. Downloads audio and video files from the internet. (Optional)')
     parser.add_argument('-c', '--clean_audio', action='store_true', help='No preserve of original audio in the final video. Returns clean synthesis. (Optional)')
     parser.add_argument('-tf', '--timefile', nargs='?', help='Define timestamp file(s) for processing (basically performs multiple --from/--to) (Optional)')
-    parser.add_argument('-p', '--prompt', type=str, help='Style prompt for video processing instructions. For example, "speaking style of captain jack sparrow". (Optional)')
+    parser.add_argument('-p', '--prompt', type=str, help='Style change prompt for sentences. For example, "speaking style of captain jack sparrow". (Optional)')
 
     args = parser.parse_args()
 

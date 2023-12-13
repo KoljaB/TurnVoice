@@ -1,8 +1,8 @@
 from moviepy.editor import AudioFileClip
 from turnvoice.core.fragtokenizer import create_synthesizable_fragments, merge_short_sentences
-from turnvoice.core.transcribe import faster_transcribe, stable_transcribe, extract_words
-from turnvoice.core.stripsilence import strip_silence
-from turnvoice.core.download import fetch_youtube
+from turnvoice.core.transcribe import faster_transcribe, extract_words
+from turnvoice.core.silence import strip_silence
+from turnvoice.core.download import fetch_youtube_extract
 from turnvoice.core.synthesis import Synthesis
 from turnvoice.core.word import Word
 from turnvoice.core.verify import verify_synthesis
@@ -32,24 +32,34 @@ class TestDownloadVideo(unittest.TestCase):
         download_directory = self.dir_with_extraction
 
         # Test with extract=True
-        video_file, audio_file, video_file_muted = fetch_youtube(test_url, extract=True, directory=download_directory)
+        audio_file, video_file_muted = fetch_youtube_extract(test_url, extract=True, directory=download_directory)
 
-        print(f"video_file: {video_file}, audio_file: {audio_file}, video_file_muted: {video_file_muted}")
-        self.assertTrue(video_file)
-        self.assertTrue(audio_file)
-        self.assertTrue(video_file_muted)
+        print(f"audio_file: {audio_file}, video_file_muted: {video_file_muted}")
+        self.assertTrue(audio_file and os.path.exists(audio_file))
+        self.assertTrue(video_file_muted and os.path.exists(video_file_muted))
+
+        # Cleanup: Remove the synthesized file
+        if os.path.exists(audio_file):
+            os.remove(audio_file)
+        if os.path.exists(video_file_muted):
+            os.remove(video_file_muted)
 
     def test_video_download_without_extraction(self):
         test_url = 'https://www.youtube.com/watch?v=VV5JOQyUYNg'
         download_directory = self.dir_without_extraction
 
         # Test with extract=False
-        video_file, audio_file, video_file_muted = fetch_youtube(test_url, extract=False, directory=download_directory)
+        audio_file, video_file_muted = fetch_youtube_extract(test_url, extract=False, directory=download_directory)
 
-        print(f"video_file: {video_file}, audio_file: {audio_file}, video_file_muted: {video_file_muted}")
-        self.assertTrue(video_file)
-        self.assertTrue(audio_file)
-        self.assertTrue(video_file_muted)
+        print(f"audio_file: {audio_file}, video_file_muted: {video_file_muted}")
+        self.assertTrue(audio_file and os.path.exists(audio_file))
+        self.assertTrue(video_file_muted and os.path.exists(video_file_muted))
+
+        # Cleanup: Remove the synthesized file
+        if os.path.exists(audio_file):
+            os.remove(audio_file)
+        if os.path.exists(video_file_muted):
+            os.remove(video_file_muted)
 
 
 
@@ -67,8 +77,7 @@ class TestTranscript(unittest.TestCase):
 
     def test_transcription(self):
         # Test the accuracy of transcription
-        segments, info = stable_transcribe(self.transcribe_test_audio_file)
-        #segments, info = faster_transcribe(self.transcribe_test_audio_file)
+        segments, info = faster_transcribe(self.transcribe_test_audio_file)
         self.assertIsNotNone(segments)
         self.assertIsNotNone(info)
 
@@ -89,7 +98,9 @@ class TestTranscript(unittest.TestCase):
         # Compare the original words list with the one read from file
         self.assertEqual(words_dict, words_from_file)
 
-
+        # Cleanup: Remove the synthesized file
+        if os.path.exists(self.transcribe_test_transcription_file):
+            os.remove(self.transcribe_test_transcription_file)
 
 class TestFrag(unittest.TestCase):
 
@@ -160,8 +171,7 @@ class TestSynthesis(unittest.TestCase):
         synthesized_file = synthesis.synthesize_duration(
             text=text,
             base_filename=base_filename,
-            desired_duration=desired_duration,
-            use_stable=True
+            desired_duration=desired_duration
         )
 
         # Verification: Check if the synthesized audio duration is close to the desired duration
@@ -170,9 +180,9 @@ class TestSynthesis(unittest.TestCase):
             
         self.assertTrue(duration_difference < 0.5)  # Tolerance of 0.5 seconds
 
-        # # Cleanup: Remove the synthesized file
-        # if os.path.exists(synthesized_file):
-        #     os.remove(synthesized_file)
+        # Cleanup: Remove the synthesized file
+        if os.path.exists(base_filename):
+            os.remove(base_filename)
 
         # Shutdown the synthesis engine
         synthesis.close()        
@@ -198,6 +208,10 @@ class TestStripSilence(unittest.TestCase):
         # Check that the stripped audio is shorter than the original
         self.assertLessEqual(len(stripped_audio), len(original_audio))
 
+        # Cleanup: Remove the file
+        if os.path.exists(self.output_audio_file):
+            os.remove(self.output_audio_file)
+
     def test_no_silence(self):
         # Call the strip_silence function with an audio file that has no silence
         # You will need to create or use an audio file with no silence for this test
@@ -212,15 +226,9 @@ class TestStripSilence(unittest.TestCase):
 
         self.assertEqual(len(input_audio), len(output_audio))
 
-    @classmethod
-    def tearDownClass(cls):
-        # Cleanup: Remove the output audio files
-        import os
-        if os.path.exists(cls.output_audio_file):
-            os.remove(cls.output_audio_file)
-        if os.path.exists("turnvoice/tests/audio/stripsilence_test2_out.wav"):
-            os.remove("turnvoice/tests/audio/stripsilence_test2_out.wav")
-
+        # Cleanup: Remove the file
+        if os.path.exists(output_no_silence_file):
+            os.remove(output_no_silence_file)
 
 class TestVerifySynthesis(unittest.TestCase):
 
@@ -230,16 +238,8 @@ class TestVerifySynthesis(unittest.TestCase):
 
     def test_verify_synthesis(self):
         last_word_is_fine, levenshtein_is_fine, jaro_winkler_is_fine, last_word_distance, levenshtein_sim, jaro_winkler_sim = verify_synthesis(self.input_audio_file, 
-            "Hey guys. These here are realtime spoken words based on OpenAI text synthesis.",
-            use_stable=False)
+            "Hey guys. These here are realtime spoken words based on OpenAI text synthesis.")
 
         assert last_word_is_fine
         assert levenshtein_is_fine
         assert jaro_winkler_is_fine
-
-    @classmethod
-    def tearDownClass(cls):
-        # Cleanup: Remove the output audio files
-        import os
-        # if os.path.exists(cls.output_audio_file):
-        #     os.remove(cls.output_audio_file)      
