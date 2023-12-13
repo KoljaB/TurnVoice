@@ -248,7 +248,8 @@ And if you've got a cool feature idea or just want to say hi, drop me a line on
 
 If you like the repo please leave a star ✨ 🌟 ✨
 
-[^1]: State is work-in-progress (early pre-alpha), so please expect API changes to come and sometimes things not working properly yet. Developed on Python 3.11.4 under Win 10.  
+[^1]: State is work-in-progress (early pre-alpha). Ülease expect CLI API changes to come and sorry in advance if anything does not work as expected.  
+  Developed on Python 3.11.4 under Win 10. 
 [^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow.
 [^3]: Deezer's Spleeter is needed to split vocals for original audio preservation.
 [^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
