@@ -1,9 +1,11 @@
 class Word:
-    def __init__(self, 
-                 text: str, 
-                 start: float, 
-                 end: float, 
-                 probability: float = 0.0):
+    def __init__(self,
+                 text: str,
+                 start: float,
+                 end: float,
+                 probability: float = 0.0
+                 ):
+
         self.text = text
         self.start = start
         self.end = end

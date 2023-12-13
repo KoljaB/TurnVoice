@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, AfterValidator
+from pydantic import BaseModel, Field, AfterValidator
 from typing_extensions import Annotated
 from openai import OpenAI
 from typing import List
@@ -9,19 +9,25 @@ client = instructor.patch(OpenAI())
 
 original_sentence_fragments = []
 
+
 class SentenceFragment(BaseModel):
     text_applied_tone: str = Field(
         ...,
-        description="With applied tone change. Keep original length under all circumstances.",
+        description="With applied tone change. "
+                    "Keep original length under all circumstances.",
     )
 
-def length_validator(changed_fragments: List[SentenceFragment]) -> List[SentenceFragment]:
+
+def length_validator(
+    changed_fragments: List[SentenceFragment]
+) -> List[SentenceFragment]:
+
     global original_sentence_fragments
 
     if len(original_sentence_fragments) != len(changed_fragments):
         raise ValueError("Number of sentence fragments must not change.")
 
-    for index, changed_fragment in enumerate(changed_fragments):        
+    for index, changed_fragment in enumerate(changed_fragments):
         original_fragment_text = original_sentence_fragments[index]
         changed_fragment_text = changed_fragment.text_applied_tone
 
@@ -31,31 +37,54 @@ def length_validator(changed_fragments: List[SentenceFragment]) -> List[Sentence
         min_factor = 0.666
         ok_distance = 7
 
-        distance = abs(len(changed_fragment_text) - len(original_fragment_text))
+        distance = abs(
+            len(changed_fragment_text) - len(original_fragment_text)
+        )
 
         if distance > ok_distance:
             if changefactor < min_factor:
-                return_msg = f"Fragment {index} is too short compared to the original {original_fragment_text}. Make text '{changed_fragment_text}' longer."
-                print(return_msg)
-                raise ValueError(return_msg)
-            if changefactor > max_factor:
-                return_msg = f"Fragment {index} is too long compared to the original {original_fragment_text}. Make text '{changed_fragment_text}' shorter."
+                return_msg = f"Fragment {index} is too short compared to the "
+                "original {original_fragment_text}. Make text "
+                f"'{changed_fragment_text}' longer."
+
                 print(return_msg)
                 raise ValueError(return_msg)
 
-    print ("All fragments have correct length.")        
+            if changefactor > max_factor:
+                return_msg = f"Fragment {index} is too long compared to the "
+                f"original {original_fragment_text}. Make text "
+                f"'{changed_fragment_text}' shorter."
+
+                print(return_msg)
+                raise ValueError(return_msg)
+
+    print("All fragments have correct length.")
     return changed_fragments
 
-class SentenceFragmentsResponse(BaseModel):
-    sentence_fragments: Annotated[List[SentenceFragment], AfterValidator(length_validator)]
 
-def transform_fragments(sentence_fragments: List[str], change_prompt: str, full_sentence: str) -> SentenceFragmentsResponse:
+class SentenceFragmentsResponse(BaseModel):
+    sentence_fragments: Annotated[
+        List[SentenceFragment],
+        AfterValidator(length_validator)
+    ]
+
+
+def transform_fragments(
+    sentence_fragments: List[str],
+    change_prompt: str,
+    full_sentence: str
+) -> SentenceFragmentsResponse:
+
     global original_sentence_fragments
+
     original_sentence_fragments = sentence_fragments
     message_list = [
         {
             "role": "system",
-            "content": f"Change the style or tone of the sentence fragments while preserving their original text length in this way: {change_prompt}. Consider the full sentence for context.",
+            "content": "Change the style or tone of the sentence fragments "
+                       "while preserving their original text length in this "
+                       f"way: {change_prompt}. Consider the full sentence "
+                       "for context.",
         },
         {
             "role": "user",
@@ -70,34 +99,45 @@ def transform_fragments(sentence_fragments: List[str], change_prompt: str, full_
     return client.chat.completions.create(
         model="gpt-4-1106-preview",
         max_retries=5,
-        messages = message_list,
+        messages=message_list,
         response_model=SentenceFragmentsResponse,
     )
+
 
 def frags_to_list(sentence_fragments) -> List[str]:
     return [fragment["text"] for fragment in sentence_fragments]
 
+
 def transform_sentences(sentences, change_prompt: str):
 
-    print (f"Starting to transform {len(sentences)} sentences.")
-    print (f"Change prompt: {change_prompt}")
-
+    print(f"Starting to transform {len(sentences)} sentences.")
+    print(f"Change prompt: {change_prompt}")
 
     for sentence_index, sentence in enumerate(sentences):
         frags_list = frags_to_list(sentence["sentence_frags"])
 
         try:
-            transformed_fragments = transform_fragments(
-                frags_list, 
+            frags = transform_fragments(
+                frags_list,
                 change_prompt,
-                sentence["text"])
-            
-            for index, fragment in enumerate(transformed_fragments.sentence_fragments):
-                print (f'Transformed fragment {index} from {sentence["sentence_frags"][index]["text"]} to {fragment.text_applied_tone}')
-                sentence["sentence_frags"][index]["text"] = fragment.text_applied_tone
+                sentence["text"]
+            )
+
+            for index, fragment in enumerate(frags.sentence_fragments):
+
+                print(f"Transformed fragment {index} from "
+                      f'{sentence["sentence_frags"][index]["text"]}'
+                      f'to {fragment.text_applied_tone}'
+                      )
+
+                new_text = fragment.text_applied_tone
+                sentence["sentence_frags"][index]["text"] = new_text
 
         except ValueError as e:
-            print (f'Error while transforming sentence {sentence_index} with text {sentence["text"]}: {e}')
-            print (f'Probably not possible to apply style change without changing the length of the sentence fragment.')
-            print (f'Sentence frags keep unchanged.')
+            print(f'Error while transforming sentence {sentence_index} '
+                  f'with text {sentence["text"]}: {e}'
+                  )
+            print("Probably not possible to apply style change without"
+                  "changing the length of the sentence fragment.")
+            print("Sentence frags keep unchanged.")
             continue

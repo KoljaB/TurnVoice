@@ -108,9 +108,11 @@ LANGUAGES = {
     "yue": "cantonese",
 }
 
+
 class TranscriptionInfo:
     def __init__(self, language):
         self.language = language
+
 
 def unload_faster_model():
     global faster_model
@@ -122,14 +124,17 @@ def unload_faster_model():
         device = cuda.get_current_device()
         device.reset()
         faster_model = None
-        print("Faster model unloaded successfully.")
+        print("faster_whisper model unloaded successfully.")
     else:
-        print("Faster is not loaded.")          
+        print("faster_whisper is not loaded.")
+
 
 def faster_transcribe(file_name, language=None, model="large-v2"):
     """
-    Transcribes a audio file with faster_whisper, returns transcript and word timestamps.
+    Transcribes a audio file with faster_whisper,
+    returns transcript and word timestamps.
     """
+
     global faster_model, faster_model_size
 
     if faster_model_size and faster_model_size != model:
@@ -137,18 +142,26 @@ def faster_transcribe(file_name, language=None, model="large-v2"):
 
     if faster_model is None:
         import faster_whisper
-        faster_model = faster_whisper.WhisperModel(model, device="cuda", compute_type="float16")
+
+        faster_model = faster_whisper.WhisperModel(
+            model,
+            device="cuda",
+            compute_type="float16"
+            )
+
         faster_model_size = model
 
-    if not language is None and language == "":
+    if language is not None and language == "":
         language = None
 
     return faster_model.transcribe(
-        file_name, 
-        language=language, 
-        beam_size=5, 
-        word_timestamps=True, 
-        vad_filter=True)
+        file_name,
+        language=language,
+        beam_size=5,
+        word_timestamps=True,
+        vad_filter=True
+        )
+
 
 def extract_words(segments):
     """
@@ -157,13 +170,14 @@ def extract_words(segments):
     words = []
     for segment in segments:
         for segword in segment.words:
-            print ("." , end="", flush=True)
+            print(".", end="", flush=True)
             word = Word(
-                text=segword.word, 
-                start=segword.start, 
-                end=segword.end, 
-                probability=segword.probability)
+                text=segword.word,
+                start=segword.start,
+                end=segword.end,
+                probability=segword.probability
+                )
             words.append(word)
 
-    print ()
+    print()
     return words
