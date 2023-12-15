@@ -20,8 +20,8 @@ import os
 class Synthesis:
     def __init__(self,
                  language="en",
-                 voices=["male.wav"],
-                 engine_name="coqui"
+                 voices=None,
+                 engine_names=["coqui"]
                  ):
 
         if language == "zh":
@@ -32,34 +32,58 @@ class Synthesis:
 
         self.language = language
         self.current_voice = 0
+        self.engines = {}
+        self.engine_names = engine_names
         self.voices = voices
-        self.engine_name = engine_name
-        self.create_engine(self.engine_name)
+        if not self.voices:
+            self.voices = ["male.wav"]
+        self.engine = self.set_engine_by_index(0)
+        if self.voices:
+            self.engine.set_voice(self.voices[self.current_voice])
+
         self.stream = TextToAudioStream(self.engine)
 
     def create_engine(self, engine_name):
-        self.engine_name = engine_name
 
         if engine_name == "system":
-            self.engine = SystemEngine()
+            return SystemEngine()
         elif engine_name == "azure":
-            self.engine = AzureEngine(
+            return AzureEngine(
                 os.environ.get("AZURE_SPEECH_KEY"),
                 os.environ.get("AZURE_SPEECH_REGION")
                 )
         elif engine_name == "elevenlabs":
-            self.engine = ElevenlabsEngine(
+            return ElevenlabsEngine(
                 os.environ.get("ELEVENLABS_API_KEY")
                 )
         elif engine_name == "coqui":
-            self.engine = CoquiEngine(language=self.language)
+            return CoquiEngine(language=self.language)
         elif engine_name == "openai":
-            self.engine = OpenAIEngine()
+            return OpenAIEngine()
         else:
             raise Exception(f"Unknown engine name {engine_name}")
 
-        if self.voices:
-            self.engine.set_voice(self.voices[self.current_voice])
+    def set_engine(self, engine_name):
+        if engine_name not in self.engines:
+            self.engines[engine_name] = self.create_engine(engine_name)
+
+        self.engine_name = engine_name
+
+        return self.engines[engine_name]
+
+    def set_engine_by_index(self, engine_index):
+        if engine_index >= len(self.engines):
+            print(f"Engine index {engine_index} is out of range. "
+                  f"Using default engine {self.engine_names[0]}")
+            engine_index = 0
+
+        engine_name = self.engine_names[engine_index]
+        self.current_engine_index = engine_index
+
+        print(f"Switching engine to {engine_name}, "
+              f"voice {self.voices[engine_index]}")
+
+        return self.set_engine(engine_name)
 
     def set_language(self, language):
         if language == "zh":
@@ -73,6 +97,9 @@ class Synthesis:
                    speed: float = 1.0,
                    speaker_index=0,
                    ):
+
+        if speaker_index != self.current_engine_index:
+            self.set_engine_by_index(speaker_index)
 
         if speaker_index != self.current_voice:
             print(f"Switching speaker to {speaker_index} with "
@@ -352,7 +379,7 @@ class Synthesis:
                 continue
 
             self.synthesize_duration(
-                text=sentence['text'],
+                text=sentence["text"],
                 base_filename=filename,
                 desired_duration=sentence["end"] - sentence["start"],
                 speaker_index=sentence["speaker_index"]

@@ -1,7 +1,6 @@
-from .render import render_video
-
-
 def main():
+    print("Welcome to TurnVoice!")
+
     import argparse
     parser = argparse.ArgumentParser(
         description="Replaces voices in Youtube videos. Can translate."
@@ -32,12 +31,12 @@ def main():
     )
     parser.add_argument(
         '-v', '--voice', nargs='+',
-        help='Reference voices for synthesis. Accepts multiple values '
-             'to replace more than one speaker.'
+        help='Reference voice(s) for synthesis. Accepts multiple values '
+             'to replace more than one speaker. (Optional)'
     )
     parser.add_argument(
         '-o', '--output_video', '-out', type=str, default='final_cut.mp4',
-        help='Filename for the final cut output video.'
+        help='Filename for the final cut output video. (Optional)'
     )
     parser.add_argument(
         '-a', '--analysis', action='store_true',
@@ -53,9 +52,10 @@ def main():
         help='Time to stop processing the video at. (Optional)'
     )
     parser.add_argument(
-        '-e', '--engine', type=str, default='coqui',
-        help='Engine to synthesize with. Can be coqui, elevenlabs, azure, '
-             'openai or system. (Optional, uses coqui as default)'
+        '-e', '--engine', nargs='+', default=['coqui'],
+        help='Engine(s) to synthesize with. Can be coqui, elevenlabs, azure, '
+             'openai or system. Accepts multiple values, linked to the '
+             'the submitted voices. (Optional, uses coqui as default)'
     )
     parser.add_argument(
         '-s', '--speaker', type=str, default='',
@@ -104,6 +104,19 @@ def main():
         help='Style change prompt for sentences. For example, '
              '"speaking style of captain jack sparrow". (Optional)'
     )
+    parser.add_argument(
+        '-prep', '--prepare', action='store_true',
+        help='Generates full script with speaker analysis, sentence prompt '
+             'transformation and translation. Can be continued. (Optional)'
+    )
+    parser.add_argument(
+        '-r', '--render', type=str,
+        help='Renders a prepared full script. (Optional)'
+    )
+    parser.add_argument(
+        '-dbg', '--debug', action='store_true',
+        help='Prints extended debugging output. (Optional)'
+    )
 
     args = parser.parse_args()
 
@@ -116,15 +129,16 @@ def main():
     )
 
     # Call the main processing function
-    render_video(
+    from .render import prepare_and_start_rendering
+    prepare_and_start_rendering(
         p_input_video=input_video,
-        p_language=language,
-        p_input_language=args.input_language,
+        p_target_language=language,
+        p_source_language=args.input_language,
         p_download_directory=args.download_directory,
         p_synthesis_directory=args.synthesis_directory,
         p_extract_disabled=args.extractoff,
         p_voices=args.voice,
-        p_engine=args.engine,
+        p_engines=args.engine,
         p_output_video=args.output_video,
         p_clean_audio=args.clean_audio,
         p_limit_start_time=args._from,
@@ -136,6 +150,9 @@ def main():
         p_max_speakers=args.max_speakers,
         p_time_files=args.timefile,
         p_prompt=args.prompt,
+        p_debug=args.debug,
+        p_prepare=args.prepare,
+        p_render=args.render
     )
 
 

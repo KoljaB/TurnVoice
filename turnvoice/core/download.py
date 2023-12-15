@@ -106,7 +106,7 @@ def extract_audio_and_muted_video(video_file: str):
     """
 
     video_extension = splitext(video_file)[1]
-    audio_file = video_file.replace(video_extension, ".mp3")
+    audio_file = video_file.replace(video_extension, ".wav")
     video_file_muted = video_file.replace(
         video_extension,
         f"_muted{video_extension}"
@@ -121,13 +121,14 @@ def extract_audio_and_muted_video(video_file: str):
 
         if not exists(audio_file):
             audio_clip = video_clip.audio
+
             audio_clip.write_audiofile(
                 audio_file,
-                codec="libmp3lame",
-                bitrate="320k"
+                codec="pcm_s16le"
             )
 
         if not exists(video_file_muted):
+            # TBD: don't write video, just return the clip
             muted_video_clip = video_clip.set_audio(None)
             muted_video_clip.write_videofile(
                 video_file_muted,

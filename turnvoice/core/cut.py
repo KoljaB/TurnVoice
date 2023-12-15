@@ -96,7 +96,8 @@ def merge_video_audio(
     video_filename,
     audio1_filename,
     audio2_filename,
-    output_filename
+    output_filename,
+    hd=False
 ):
     """
     Merges two audio files with a video file.
@@ -117,11 +118,33 @@ def merge_video_audio(
 
         combined_audio = CompositeAudioClip([audio_clip1, audio_clip2])
         final_clip = video_clip.set_audio(combined_audio)
-        final_clip.write_videofile(
-            output_filename,
-            codec='libx264',
-            audio_codec='aac'
-        )
+
+        if hd:
+            # Write the final video file with "improved quality" settings
+            # (not sure if all of these work)
+            final_clip.write_videofile(
+                output_filename,
+                codec='libx264',  # High-quality video codec
+                audio_codec='aac',  # High-quality audio codec
+                bitrate='8000k',  # Higher bitrate (e.g., 8000 kbps)
+
+                # high frame rate
+                fps=60,
+
+                # Encoding speed/quality trade-off
+                # (slower encoding for better quality)
+                preset='slow',
+
+                # Constant Rate Factor (lower values mean better
+                # quality, 18-20 is usually good)
+                ffmpeg_params=['-crf', '18']
+            )
+        else:
+            final_clip.write_videofile(
+                output_filename,
+                codec='libx264',
+                audio_codec='aac'
+            )
 
         return final_clip.duration
     except Exception as e:
@@ -154,21 +177,37 @@ def split_audio(file_path, output_path, offset=0, duration=600):
 
     # Check if the file needs to be converted to mp3
     file_path_temp = file_path
-    if ext.lower() != '.mp3':
-        print(f"Converting audio from format {ext} to mp3")
-        file_path_temp = join(output_path, f"{name}.mp3")
+    # if ext.lower() != '.mp3':
+    #     print(f"Converting audio from format {ext} to mp3")
+    #     file_path_temp = join(output_path, f"{name}.mp3")
+    #     subprocess.run(
+    #         ['ffmpeg',
+    #          '-y',
+    #          '-i', file_path,
+    #          '-codec', 'libmp3lame',
+    #          '-b', '320k',
+    #          file_path_temp], check=True)
+
+    if ext.lower() != '.wav':
+        file_path_temp = join(output_path, f"{name}.wav")
+
+        print(f"Converting audio {file_path} from format "
+              f"{ext} to wav ({file_path_temp})")
         subprocess.run(
             ['ffmpeg',
              '-y',
              '-i', file_path,
-             '-codec', 'libmp3lame',
-             '-b', '320k',
+             '-codec', 'pcm_s32le',  # pcm_s16le, pcm_s32le
+             '-ar', '44100',  # Sets the sample rate to 96 kHz
              file_path_temp], check=True)
 
     # Separate audio into vocals and accompaniment using spleeter
+    print(f"Splitting audio {file_path_temp} into accompaniment and "
+          f" vocals ({vocals_path}) using spleeter.")
     subprocess.run(
         ['spleeter',
          'separate',
+         '-b', '196k',
          '-o', output_path,
          '-p', 'spleeter:2stems',
          '-c', 'wav',
