@@ -269,7 +269,7 @@ Best performance can be achieved by finetuning.
 
 2. Edit the created script (or make a copy before and edit that one).  
 
-    CChange texts, speakers or the timings until you are satisfied.  
+    Change texts, speakers or the timings until you are satisfied.  
 
 3. Use --render to generate the final video using the edited script.
 
@@ -301,5 +301,5 @@ If you like the repo please leave a star
 [^4]: Deezer's Spleeter is needed to split vocals for original audio preservation.
 [^5]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
 [^6]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio.
-[^7]: Generates costs. Uses gpt-4-1106-preview model,  and . Needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.
+[^7]: Generates costs. Uses gpt-4-1106-preview model and needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.
 [^8]: Generates costs. [Elevenlabs](#elevenlabs-engine) is pricy, [OpenAI TTS](#openai-engine), [Azure](#azure-engine) are affordable. Needs API Keys stored in env variables, see engine information for details.
