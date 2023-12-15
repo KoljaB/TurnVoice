@@ -1,30 +1,61 @@
 # TurnVoice
 
-A command-line tool to **transform voices** in YouTube videos with additional **translation** capabilities. [^1] 
+A command-line tool to **transform voices** in (YouTube) videos with additional **translation** capabilities. [^1] 
 
 https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af99202d7312
 
 <sup>(sorry for the bad video quality, it had to fit under 10MB file size because Github 🤷)</sup> [🎞️ HD version 🎞️](https://www.youtube.com/watch?v=Rl0WhIax2lM) 
 
-## New Features
+## Features
 
-- use --prompt ("speaking style of captain jack sparrow") [^6] 
-- **Elevenlabs**, **OpenAI TTS**, **Azure**, **Coqui TTS** and System voices for redubbing
-- replace specific speaker or multiple speaker voices (work in progress)
-- process local files
-- preserve original background audio  
+- zero costs using [Coqui TTS](#coqui-engine) voice cloning or [System voices](#system-engine)  
+- or use popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), [Azure](#azure-engine) as an alternative 💲 [^8] 
+- translate voices with -l [your_language_shortcut] (no costs)
+- you can use prompts to change the style of the spoken words 💲 [^7] *(for example: --prompt "speaking style of captain jack sparrow")*   
+- processing of any local video files is possible
+- preserves the original background audio
+- full control over rendering: [specify](#finetuning) the exact sentence text, timings and voice
 
 > *more infos 👉 [release notes](https://github.com/KoljaB/TurnVoice/releases)*
 
 ## Prerequisites
 
 - [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^2] 
-- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^3]
+- [ffmpeg](https://ffmpeg.org/download.html) command-line utility installed [^3]
+  <details>
+  <summary>To install ffmpeg with a package maanger:</summary>
+
+    - **On Ubuntu or Debian**:
+        ```bash
+        sudo apt update && sudo apt install ffmpeg
+        ```
+
+    - **On Arch Linux**:
+        ```bash
+        sudo pacman -S ffmpeg
+        ```
+
+    - **On MacOS using Homebrew** ([https://brew.sh/](https://brew.sh/)):
+        ```bash
+        brew install ffmpeg
+        ```
+
+    - **On Windows using Chocolatey** ([https://chocolatey.org/](https://chocolatey.org/)):
+        ```bash
+        choco install ffmpeg
+        ```
+
+    - **On Windows using Scoop** ([https://scoop.sh/](https://scoop.sh/)):
+        ```bash
+        scoop install ffmpeg
+        ```    
+  </details>
+- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^4]
 > [!TIP]
 > *For Deezer's Spleeter CLI install [Python 3.8](https://www.python.org/downloads/), then run `pipx install spleeter --python /path/to/python3.8` (pip install pipx)*  
 > <sub>Pro-Tipp: don't be an idiot like me and waste hours trying to run spleeter on a somewhat modern python version, just give it it's precious dinosaur era 3.8 env and move on</sub>
 - Huggingface conditions accepted for [Speaker Diarization](https://huggingface.co/pyannote/speaker-diarization-3.1) and [Segmentation](https://huggingface.co/pyannote/segmentation-3.0)
-- Huggingface access token in env variable HF_ACCESS_TOKEN [^4]
+- Huggingface access token in env variable HF_ACCESS_TOKEN [^5]
 > [!TIP]
 > *Set your [HF token](https://huggingface.co/settings/tokens) with `setx HF_ACCESS_TOKEN "your_token_here"*
 
@@ -70,19 +101,20 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 - `-a`, `--analysis`: Print transcription and speaker analysis without synthesizing or rendering the video.
 - `-from`: Time to start processing the video from.
 - `-to`: Time to stop processing the video at.
-- `-e`, `--engine`: Synthesis engine (options: coqui, elevenlabs, azure, openai, system; default: coqui).
+- `-e`, `--engine`: Engine(s) to synthesize with. Can be coqui, elevenlabs, azure, openai or system. Accepts multiple values, linked to the the submitted voices. 
 - `-s`, `--speaker`: Speaker number to be transformed.
-- `-snum`, `--num_speakers`: Exact number of speakers in the video, aids in diarization.
-- `-smin`, `--min_speakers`: Minimum number of speakers in the video.
-- `-smax`, `--max_speakers`: Maximum number of speakers in the video.
+- `-snum`, `--num_speakers`: Helps diarization. Specify the exact number of speakers in the video if you know it in advance. 
+- `-smin`, `--min_speakers`: Helps diarization. Specify the minimum number of speakers in the video if you know it in advance. 
+- `-smax`, `--max_speakers`: Helps diarization. Specify the maximum number of speakers in the video if you know it in advance. 
 - `-dd`, `--download_directory`: Directory for saving downloaded files (default: 'downloads').
 - `-sd`, `--synthesis_directory`: Directory for saving synthesized audio files (default: 'synthesis').
 - `-exoff`, `--extractoff`: Disables extraction of audio from the video file. Downloads audio and video from the internet.
 - `-c`, `--clean_audio`: Removes original audio from the final video, resulting in clean synthesis.
 - `-tf`, `--timefile`: Define timestamp file(s) for processing (functions like multiple --from/--to commands).
-- `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^6]
+- `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^7]
+- `-prep`, `--prepare`: Write full script with speaker analysis, sentence transformation and translation but doesn't perform synthesis or rendering. Can be continued.
+- `-r`, `--render`: Takes a full script and only perform synthesis and rendering on it, but no speaker analysis, sentence transformation or translation. 
 
-> [!TIP]
 > `-i` and `-l` can be used as both positional and optional arguments.
 
 ## Coqui Engine
@@ -198,7 +230,7 @@ turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 
 - early alpha / work-in-progress, so bugs might occur (please report, need to be aware to fix)
 - might not always achieve perfect lip synchronization, especially when translating to a different language
-- speaker detection does not work that well, probably doing something wrong or or perhaps the tech[^5] is not yet ready to be reliable
+- speaker detection does not work that well, probably doing something wrong or or perhaps the tech[^6] is not yet ready to be reliable
 - translation feature is currently in experimental prototype state (powered by deep-translate) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got **way** better reducing artifacts with the new v0.0.30 algo)
 - spleeter might get confused when a spoken voice and backmusic with singing are present together in the source audio
@@ -224,13 +256,34 @@ Then select a speaker from the list with -s parameter
 turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -s 2
 ```
 
+### Finetuning
+
+Best performance can be achieved by finetuning.  
+
+1. Use --prepare to write a full script including text, speakers and timestamps 
+2. Edit the script
+3. Use --render to take that script and generate the final video
+
+First write the full script. Example:
+
+```bash
+turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM --prepare
+```
+
+Now in the download directory a subdirectory was created with the name of the video, with a file in it named "full_script.txt", edit that one or create a copy. Then change texts, speakers or the timings until you are satisfied.  
+
+Finally start the render process with the changed script:
+
+```bash
+turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM --render "downloads\my_video_name\full_script.txt"
+```
+
 ## Future Improvements
 
-- **Translation quality**: Add option to translate with OpenAI, DeepL API, other models. Better logic than simply transcribe the frags.
-- **Voice Cloning from YouTube**: Cloning voices directly from other videos.
-- **Speed up to realtime**: Feed streams and get a "realtime" (translated) stream with voice of choice
-- **Open up the CLI**: Allow local Videos, Audios and even Textfiles as Input until down to turnvoice "Hello World"
-- match spoken volume of original voice
+- quality improvements (diarization, rendering)
+- cloning voices directly from other videos
+- speed up to realtime, handle streams 
+- match volume of original voice
 
 ## License
 
@@ -246,12 +299,15 @@ And if you've got a cool feature idea or just want to say hi, drop me a line on
 - [Reddit](https://www.reddit.com/user/Lonligrin)  
 - [EMail](mailto:kolja.beigel@web.de)  
 
-If you like the repo please leave a star ✨ 🌟 ✨
+If you like the repo please leave a star  
+✨ 🌟 ✨
 
 [^1]: State is work-in-progress (early pre-alpha). Ülease expect CLI API changes to come and sorry in advance if anything does not work as expected.  
   Developed on Python 3.11.4 under Win 10. 
 [^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow.
-[^3]: Deezer's Spleeter is needed to split vocals for original audio preservation.
-[^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
-[^5]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio.
-[^6]: Uses GPT-4 and generates costs. Needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.
+[^3]: ffmpeg is needed to convert mp3 files into wav
+[^4]: Deezer's Spleeter is needed to split vocals for original audio preservation.
+[^5]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
+[^6]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio.
+[^7]: Generates costs. Uses gpt-4-1106-preview model,  and . Needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.
+[^8]: Generates costs. [Elevenlabs](#elevenlabs-engine) is pricy, [OpenAI TTS](#openai-engine), [Azure](#azure-engine) are affordable. Needs API Keys stored in env variables, see engine information for details.
