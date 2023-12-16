@@ -11,7 +11,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
 - features opensource [Coqui TTS](#coqui-engine) with voice cloning and free [System voices](#system-engine)  
 - you can also use popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), [Azure](#azure-engine) as an alternative 💲 [^8] 
 - translating videos with -l [your_language_shortcut] with no costs using deep-translator 
-- you can use prompts to change the speaking style 💲 [^7] *(for example: --prompt "speaking style of captain jack sparrow")*   
+- you can use ai prompts to change the speaking style 💲 [^7] *(for example: --prompt "speaking style of captain jack sparrow")*   
 - processing of any local video files is possible
 - preserves the original background audio
 - full control over rendering: [specify](#finetuning) the exact sentence text, timings and voice
