@@ -21,7 +21,8 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
   Make every spoken sentence delivered in a custom speaking style for a unique flair using prompting. [^6]
 
 - **Full Rendering Control**  
-  Precise [rendering control](#finetuning) by customizing the sentence text, timings, and voice selection. <sup>*💡 Tip: the [Renderscript Editor](#renderscript-editor) makes this step easy*</sup>
+  Precise [rendering control](#finetuning) by customizing the sentence text, timings, and voice selection.  
+  <sup>*💡 Tip: the [Renderscript Editor](#renderscript-editor) makes this step easy*</sup>
 
 - **Local Video Processing**  
   Process any local video files.
