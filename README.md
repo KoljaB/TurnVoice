@@ -154,7 +154,7 @@ Assign engines and voices to each speaker track with the -e and -v commands.
 - `-smax`, `--max_speakers`: Helps diarization. Specify the maximum number of speakers in the video if you know it in advance. 
 - `-dd`, `--download_directory`: Directory for saving downloaded files (default: 'downloads').
 - `-sd`, `--synthesis_directory`: Directory for saving synthesized audio files (default: 'synthesis').
-- `-exoff`, `--extractoff`: Disables extraction of audio from the video file. Downloads audio and video from the internet.
+- `-ex`, `--extract`: Enables extraction of audio from the video file. Otherwise downloads audio from the internet (default).
 - `-c`, `--clean_audio`: Removes original audio from the final video, resulting in clean synthesis.
 - `-tf`, `--timefile`: Define timestamp file(s) for processing (functions like multiple --from/--to commands).
 - `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^6]
