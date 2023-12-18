@@ -119,7 +119,7 @@ Translation and prompts should be applied in this preparation step. Engines or v
 ### Renderscript Editor
 
 1. **Open script**  
-  Open the editor.html file. In the Editor click on the file open button and navigate to the folder you started turnvoice from. Open download folder. Open the folder with the name of the video. Open the file full_script.txt.
+  Open the [editor.html](https://github.com/KoljaB/TurnVoice/blob/main/turnvoice/editor/editor.html) file. Click on the file open button and navigate to the folder you started turnvoice from. Open download folder. Open the folder with the name of the video. Open the file full_script.txt.
 2. **Edit**  
   The Editor will visualize the transcript and speaker diarization results and start playing the original video now. While playing verify texts, starting times and speaker assignments and adjust them if the detection went wrong.
 3. **Save**  
