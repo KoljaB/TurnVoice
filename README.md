@@ -80,10 +80,10 @@ pip install turnvoice
 > For faster rendering with GPU prepare your [CUDA](https://pytorch.org/get-started/locally/) environment after installation:
 > 
 > ***For CUDA 11.8***  
-> `pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118`  
+> `pip install torch==2.1.2+cu118 torchaudio==2.1.2+cu118 --index-url https://download.pytorch.org/whl/cu118`  
 >   
 > ***For CUDA 12.1***  
-> `pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu211 --index-url https://download.pytorch.org/whl/cu211`  
+> `pip install torch==2.1.2+cu118 torchaudio==2.1.2+cu211 --index-url https://download.pytorch.org/whl/cu211`  
 
 ## Usage
 
@@ -117,6 +117,8 @@ turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c --prepare
 Translation and prompts should be applied in this preparation step. Engines or voices come later in the render step.
 
 ### Renderscript Editor
+
+![Editor](https://i.ibb.co/cYSVksS/Renderscript-Editor-small.png)
 
 1. **Open script**  
   Open the [editor.html](https://github.com/KoljaB/TurnVoice/blob/main/turnvoice/editor/editor.html) file. Click on the file open button and navigate to the folder you started turnvoice from. Open download folder. Open the folder with the name of the video. Open the file full_script.txt.
