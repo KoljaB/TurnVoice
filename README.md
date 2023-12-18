@@ -21,7 +21,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
   Make every spoken sentence delivered in a custom speaking style for a unique flair using prompting. [^6]
 
 - **Full Rendering Control**  
-  Precise [rendering control](#finetuning) by customizing the sentence text, timings, and voice selection.  
+  Precise [rendering control](#workflow) by customizing the sentence text, timings, and voice selection.  
     
   <sup>*💡 Tip: the [Renderscript Editor](#renderscript-editor) makes this step easy*</sup>
 
@@ -301,27 +301,6 @@ Then select a speaker from the list with -s parameter
 ```bash
 turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM -s 2
 ```
-
-### Finetuning
-
-Best performance can be achieved by finetuning.  
-
-1. Use --prepare to write a full script including text, speakers and timestamps 
-
-    ```bash
-    turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM --prepare
-    ```
-    Now in the download directory a subdirectory was created with the name of the video, with a file in it named "full_script.txt".
-
-2. Edit the created script (or make a copy before and edit that one).  
-
-    Change texts, speakers or the timings until you are satisfied.  
-
-3. Use --render to generate the final video using the edited script.
-
-    ```bash
-    turnvoice https://www.youtube.com/watch?v=2N3PsXPdkmM --render "downloads\my_video_name\full_script.txt"
-    ```
 
 ## License
 
