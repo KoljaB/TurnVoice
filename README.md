@@ -89,9 +89,7 @@ pip install turnvoice
 turnvoice [-i] <YouTube URL|ID|Local File> [-l] <Translation Language> -e <Engine(s)> -v <Voice(s)> -o <Output File>
 ```
 
-Define engine and voice for every speaker you want to exchange.  
-
-You can submit multiple engine and voice strings to mix multiple tts systems in one render process.
+Submit a string to the voice parameter for every speaker voice you want to exchange. If you define engines, the voices will be assigned to engines submitted. If there are more voices than engines defined it uses the first engine. If you do define no engine, the coqui engine will be used as default engine. If you define no voices a default voice for every engine will be used.
 
 ### Example Command:
 
