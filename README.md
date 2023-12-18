@@ -106,31 +106,38 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 
 ## Workflow
 
-1. Prepare a renderscript using
+### Preparation
+
+Prepare a script with transcription, speaker diarization (and optionally translation or prompting) using:
 
 ```bash
 turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c --prepare
 ```
 
-Apply translation and prompts in the prepare step. Engines or voices come later in the render step.
+Translation and prompts should be applied in this preparation step. Engines or voices come later in the render step.
 
-2. Refine your renderscript using the editor
+### Renderscript Editor
 
-- Open the editor.html file. In the Editor click on the file open button and navigate to the folder you started turnvoice from. Open download folder. Open the folder with the name of the video. Open the file full_script.txt.
-- The Editor will visualize the transcript and speaker diarization results and start playing the original video now. While playing verify texts, starting times and speaker assignments and adjust them if the detection went wrong.
-- Save the script. 
+1. **Open script**
+  Open the editor.html file. In the Editor click on the file open button and navigate to the folder you started turnvoice from. Open download folder. Open the folder with the name of the video. Open the file full_script.txt.
+2. **Edit**
+  The Editor will visualize the transcript and speaker diarization results and start playing the original video now. While playing verify texts, starting times and speaker assignments and adjust them if the detection went wrong.
+3. **Save** 
+  Save the script. Remember the path to the file.
 
-3. Render the script to generate the final video using
+### Rendering
+
+Render the refined script to generate the final video using:
 
 ```bash
 turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c --render <path_to_script>
 ```
 
-Adjust the path in the displayed CLI command (can't read it exact from the browser).
+Adjust the path in the displayed CLI command (the editor can't read that information out from the browser).
 
 Assign engines and voices to each speaker track with the -e and -v commands.
 
-### Parameters Explained:
+## Parameters Explained:
 
 - `-i`, `--in`: Input video. Accepts a YouTube video URL or ID, or a path to a local video file.
 - `-l`, `--language`: Language for translation. Coqui synthesis supports: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko. Omit to retain the original video language.
