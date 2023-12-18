@@ -89,7 +89,7 @@ pip install turnvoice
 turnvoice [-i] <YouTube URL|ID|Local File> [-l] <Translation Language> -e <Engine(s)> -v <Voice(s)> -o <Output File>
 ```
 
-Submit a string to the voice parameter for every speaker voice you want to exchange. If you define engines, the voices will be assigned to engines submitted. If there are more voices than engines defined it uses the first engine. If you do define no engine, the coqui engine will be used as default engine. If you define no voices a default voice for every engine will be used.
+Submit a string to the 'voice' parameter for each speaker voice you wish to use. If you specify engines, the voices will be assigned to these engines in the order they are listed. Should there be more voices than engines, the first engine will be used for the excess voices. In the absence of a specified engine, the Coqui engine will be used as the default. If no voices are defined, a default voice will be selected for each engine.
 
 ### Example Command:
 
