@@ -12,16 +12,16 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
   Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning)*</sup>
 
 - **Voice Variety**  
-  Support for popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), or [Azure](#azure-engine) for more voices. [^8]
+  Support for popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), or [Azure](#azure-engine) for more voices. [^7]
 
 - **Translation**  
   Translates videos at zero costs powered by free deep-translator.
 
 - **Change Speaking Styles** <sup>*(AI powered)*</sup>  
-  Make every spoken sentence delivered in a custom speaking style for a unique flair using prompting. [^7]
+  Make every spoken sentence delivered in a custom speaking style for a unique flair using prompting. [^6]
 
 - **Full Rendering Control**  
-  Precise [rendering control](#finetuning) by customizing the sentence text, timings, and voice selection.
+  Precise [rendering control](#finetuning) by customizing the sentence text, timings, and voice selection. <sup>*💡 Tip: use the Renderscript Editor*</sup>
 
 - **Local Video Processing**  
   Process any local video files.
@@ -63,12 +63,8 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/f87759cc-0b3f-4d8f-864f-af992
         scoop install ffmpeg
         ```    
   </details>
-- [Deezer's Spleeter](https://github.com/deezer/spleeter) command-line utility installed [^4]
-> [!TIP]
-> *For Deezer's Spleeter CLI install [Python 3.8](https://www.python.org/downloads/), then run `pipx install spleeter --python /path/to/python3.8` (pip install pipx)*  
-> <sub>Pro-Tipp: don't be an idiot like me and waste hours trying to run spleeter on a somewhat modern python version, just give it it's precious dinosaur era 3.8 env and move on</sub>
 - Huggingface conditions accepted for [Speaker Diarization](https://huggingface.co/pyannote/speaker-diarization-3.1) and [Segmentation](https://huggingface.co/pyannote/segmentation-3.0)
-- Huggingface access token in env variable HF_ACCESS_TOKEN [^5]
+- Huggingface access token in env variable HF_ACCESS_TOKEN [^4]
 > [!TIP]
 > *Set your [HF token](https://huggingface.co/settings/tokens) with `setx HF_ACCESS_TOKEN "your_token_here"*
 
@@ -93,6 +89,10 @@ pip install turnvoice
 turnvoice [-i] <YouTube URL|ID|Local File> [-l] <Translation Language> -e <Engine(s)> -v <Voice(s)> -o <Output File>
 ```
 
+Define engine and voice for every speaker you want to exchange.  
+
+You can submit multiple engine and voice strings to mix multiple tts systems in one render process.
+
 ### Example Command:
 
 Arthur Morgan narrating a cooking tutorial:
@@ -103,6 +103,32 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 
 > [!NOTE]
 > *Requires the cloning voice file (e.g., arthur.wav or .json) in the same directory (you find one in the tests directory).*
+
+## Workflow
+
+1. Prepare a renderscript using
+
+```bash
+turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c --prepare
+```
+
+Apply translation and prompts in the prepare step. Engines or voices come later in the render step.
+
+2. Refine your renderscript using the editor
+
+- Open the editor.html file. In the Editor click on the file open button and navigate to the folder you started turnvoice from. Open download folder. Open the folder with the name of the video. Open the file full_script.txt.
+- The Editor will visualize the transcript and speaker diarization results and start playing the original video now. While playing verify texts, starting times and speaker assignments and adjust them if the detection went wrong.
+- Save the script. 
+
+3. Render the script to generate the final video using
+
+```bash
+turnvoice https://www.youtube.com/watch?v=cOg4J1PxU0c --render <path_to_script>
+```
+
+Adjust the path in the displayed CLI command (can't read it exact from the browser).
+
+Assign engines and voices to each speaker track with the -e and -v commands.
 
 ### Parameters Explained:
 
@@ -124,7 +150,7 @@ turnvoice -i AmC9SmCBUj4 -v arthur.wav -o cooking_with_arthur.mp4
 - `-exoff`, `--extractoff`: Disables extraction of audio from the video file. Downloads audio and video from the internet.
 - `-c`, `--clean_audio`: Removes original audio from the final video, resulting in clean synthesis.
 - `-tf`, `--timefile`: Define timestamp file(s) for processing (functions like multiple --from/--to commands).
-- `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^7]
+- `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^6]
 - `-prep`, `--prepare`: Write full script with speaker analysis, sentence transformation and translation but doesn't perform synthesis or rendering. Can be continued.
 - `-r`, `--render`: Takes a full script and only perform synthesis and rendering on it, but no speaker analysis, sentence transformation or translation. 
 
@@ -243,7 +269,7 @@ turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 
 - early alpha / work-in-progress, so bugs might occur (please report, need to be aware to fix)
 - might not always achieve perfect lip synchronization, especially when translating to a different language
-- speaker detection does not work that well, probably doing something wrong or or perhaps the tech[^6] is not yet ready to be reliable
+- speaker detection does not work that well, probably doing something wrong or or perhaps the tech[^5] is not yet ready to be reliable
 - translation feature is currently in experimental prototype state (powered by deep-translate) and still produces very imperfect results
 - occasionally, the synthesis might introduce unexpected noises or distortions in the audio (we got **way** better reducing artifacts with the new v0.0.30 algo)
 - spleeter might get confused when a spoken voice and backmusic with singing are present together in the source audio
@@ -311,8 +337,7 @@ If you like the repo please leave a star
   Developed on Python 3.11.4 under Win 10. 
 [^2]: Rubberband is needed to pitchpreserve timestretch audios for fitting synthesis into timewindow.
 [^3]: ffmpeg is needed to convert mp3 files into wav
-[^4]: Deezer's Spleeter is needed to split vocals for original audio preservation.
-[^5]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
-[^6]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio.
-[^7]: Generates costs. Uses gpt-4-1106-preview model and needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.
-[^8]: Generates costs. [Elevenlabs](#elevenlabs-engine) is pricy, [OpenAI TTS](#openai-engine), [Azure](#azure-engine) are affordable. Needs API Keys stored in env variables, see engine information for details.
+[^4]: Huggingface access token is needed to download the speaker diarization model for identifying speakers with pyannote.audio.
+[^5]: Speaker diarization is performed with the pyannote.audio default HF implementation on the vocals track splitted from the original audio.
+[^6]: Generates costs. Uses gpt-4-1106-preview model and needs [OpenAI API Key](https://platform.openai.com/api-keys) stored in env variable **OPENAI_API_KEY**.
+[^7]: Generates costs. [Elevenlabs](#elevenlabs-engine) is pricy, [OpenAI TTS](#openai-engine), [Azure](#azure-engine) are affordable. Needs API Keys stored in env variables, see engine information for details.

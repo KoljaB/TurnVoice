@@ -1,9 +1,12 @@
 from .word import Word
 import torch
 import gc
+import os
 
 faster_model = None
 faster_model_size = None
+stable_model = None
+stable_model_size = None
 
 LANGUAGES = {
     "en": "english",
@@ -115,6 +118,10 @@ class TranscriptionInfo:
 
 
 def unload_faster_model():
+    """
+    Unloads the 'faster_model' from memory. It clears the model,
+    empties the CUDA cache, and resets the GPU device.
+    """
     global faster_model
     if faster_model:
         del faster_model
@@ -129,7 +136,26 @@ def unload_faster_model():
         print("faster_whisper is not loaded.")
 
 
-def faster_transcribe(file_name, language=None, model="large-v2"):
+def unload_stable_model():
+    """
+    Unloads the 'stable_model' from memory. It clears the model,
+    empties the CUDA cache, and resets the GPU device.
+    """
+    global stable_model
+    if stable_model:
+        del stable_model
+        torch.cuda.empty_cache()
+        gc.collect()
+        from numba import cuda
+        device = cuda.get_current_device()
+        device.reset()
+        stable_model = None
+        print("Stable model unloaded successfully.")
+    else:
+        print("Stable is not loaded.")
+
+
+def faster_transcribe(file_name, language=None, model="large-v2", vad=True):
     """
     Transcribes a audio file with faster_whisper,
     returns transcript and word timestamps.
@@ -159,8 +185,79 @@ def faster_transcribe(file_name, language=None, model="large-v2"):
         language=language,
         beam_size=5,
         word_timestamps=True,
-        vad_filter=True
+        vad_filter=vad
         )
+
+
+def stable_transcribe(file_name, language=None, model="large-v3", vad=True):
+    """
+    Transcribes a audio file with stable_whisper,
+    returns transcript and word timestamps.
+    """
+    global stable_model, stable_model_size
+
+    if stable_model_size and stable_model_size != model:
+        unload_stable_model()
+
+    if stable_model is None:
+        import stable_whisper
+
+        stable_model = stable_whisper.load_model(model)
+        stable_model_size = model
+
+    if language is not None and language == "":
+        language = None
+
+    # result = stable_model.transcribe(
+    #     file_name,
+    #     word_timestamps=True,
+    #     vad=vad,
+    #     language=language,
+    #     regroup=False  # disable default regrouping logic
+    #     )
+
+    result = stable_model.transcribe(
+        file_name,
+        word_timestamps=True,
+        vad=vad,
+        language=language,
+        suppress_silence=True,
+        ts_num=16,
+        regroup=False  # disable default regrouping logic
+        )
+
+    result = stable_model.refine(
+        file_name,
+        result,
+        precision=0.05,
+    )
+
+    # apply our own regrouping logic (currently same as default)
+    result = (
+        result.clamp_max()
+        .split_by_punctuation([('.', ' '), '。', '?', '？', (',', ' '), '，'])
+        .split_by_gap(.5)
+        .merge_by_gap(.3, max_words=3)
+        .split_by_punctuation([('.', ' '), '。', '?', '？'])
+    )
+
+    file_name_base, _ = os.path.splitext(file_name)
+    result.save_as_json(file_name_base + "_transcript.json")
+
+    # for faster_whisper models
+    language = result.language
+    language_shortcut = ""
+    for key, value in LANGUAGES.items():
+        if value == language:
+            language_shortcut = key
+            break
+
+    # for non faster_whisper models
+    if language_shortcut == "":
+        language_shortcut = language
+    info = TranscriptionInfo(language_shortcut)
+    print(f"Detected language: {language} ({language_shortcut})")
+    return result, info
 
 
 def extract_words(segments):
@@ -181,3 +278,35 @@ def extract_words(segments):
 
     print()
     return words
+
+
+def transcribe(file_name, language=None, model="large-v3", use_stable=False):
+    """
+    Transcribes the given audio file using the specified model.
+    Chooses between stable and faster transcription models based
+    on 'use_stable' flag.
+    :param file_name: Name of the audio file to transcribe.
+    :param language: Language of the audio content (optional).
+    :param model: Model version to use for transcription (default
+      is 'large-v3').
+    :param use_stable: Boolean flag to choose between stable or faster model.
+    :return: Transcription result.
+    """
+    if use_stable:
+        return stable_transcribe(file_name, language, model)
+    else:
+        return faster_transcribe(file_name, language, model)
+
+
+def unload_model(use_stable=False):
+    """
+    Unloads the transcription model from memory.
+    Chooses between unloading the stable or faster model based on 'use_stable'
+    flag.
+    :param use_stable: Boolean flag to choose between unloading stable or
+      faster model.
+    """
+    if use_stable:
+        unload_stable_model()
+    else:
+        unload_faster_model()

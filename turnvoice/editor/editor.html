@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turnvoice Renderscript Editor</title>
+    <link rel="stylesheet" href="editor.css">
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="youtubePlayer"></div>
+        <div id="rightColumn">
+            <div id="labelAndCheckbox">
+                <label id="currentTimeLabel">🕒 00:00.00</label>
+                <div id="chkAutoscrollContainer">
+                    <input type="checkbox" id="chkAutoscroll" checked> Autoscroll
+                </div>                
+            </div>
+            <br>
+            <input type="file" id="fileInput">
+            
+            <button id="saveButton">💾 Save Script</button>
+            <br>
+            <label>CLI command:</label>
+            <textarea id="cliOutput" readonly></textarea>
+        </div>
+    </div>
+    <div id="currentTimeLine"></div>
+    <div id="tracksContainer"></div>
+    <script src="editor.js"></script>
+</body>
+</html>

@@ -86,7 +86,23 @@ def check_youtube(url_or_id: str):
     return False
 
 
-def ensure_youtube_url(url_or_id: str):
+def ensure_youtube_url(url_or_id: str) -> str:
+    """
+    Converts a YouTube video ID to a full URL if necessary,
+    or returns the original URL.
+
+    This function assumes the input is a YouTube video ID
+    if it is an 11-character alphanumeric string.
+    In this case, it constructs and returns the full YouTube
+    video URL. Otherwise, it returns the input as is.
+
+    Args:
+    url_or_id (str): The YouTube video ID or URL.
+
+    Returns:
+    str: The full YouTube video URL if a video ID was provided,
+      otherwise the original URL.
+    """
     if len(url_or_id) == 11 and url_or_id.isalnum():
         return "https://www.youtube.com/watch?v=" + url_or_id
     return url_or_id

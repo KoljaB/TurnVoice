@@ -244,3 +244,17 @@ def assign_fragments_to_sentences(sentence_fragments, full_sentences):
 
                 # Assign the full sentence text to the fragment
                 frag['full_sentence'] = full_sentence['text']
+
+
+def get_segments(segments):
+    """
+    Convert a list of Segment objects to a list of dictionaries.
+    """
+    sentences = []
+    for segment in segments:
+        sentences.append({
+            "text": segment.text.strip(),
+            "start": segment.start,
+            "end": segment.end
+        })
+    return sentences

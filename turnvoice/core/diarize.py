@@ -168,7 +168,7 @@ def import_time_file(timefile):
     Returns:
     - list: A list of tuples in the format of (start_time, end_time).
     """
-    with open(timefile, "r") as f:
+    with open(timefile, "r", encoding='utf-8') as f:
         lines = f.readlines()
 
     time_list = []
@@ -248,7 +248,7 @@ def write_speaker_timefiles(speakers, directory):
               f"to {timefile}...")
 
         # Open the file in write mode
-        with open(timefile, "w") as f:
+        with open(timefile, "w", encoding='utf-8') as f:
             # Write the total time spoken by the speaker
             f.write(f"Speaker {speaker_number} total: "
                     f"{speaker['total_time']:.1f}s\n\n")

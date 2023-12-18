@@ -5,8 +5,10 @@ from typing import List
 import instructor
 import json
 
+# Patching the OpenAI client with instructor functionalities.
 client = instructor.patch(OpenAI())
 
+# Global list to hold original sentence fragments.
 original_sentence_fragments = []
 
 
@@ -21,6 +23,10 @@ class SentenceFragment(BaseModel):
 def length_validator(
     changed_fragments: List[SentenceFragment]
 ) -> List[SentenceFragment]:
+    """
+    Validates that the length of the changed sentence fragments
+    is within acceptable limits compared to the original fragments.
+    """
 
     global original_sentence_fragments
 
@@ -74,6 +80,10 @@ def transform_fragments(
     change_prompt: str,
     full_sentence: str
 ) -> SentenceFragmentsResponse:
+    """
+    Transforms sentence fragments based on a given style or tone change,
+    while preserving the original length of each fragment.
+    """
 
     global original_sentence_fragments
 
@@ -105,10 +115,17 @@ def transform_fragments(
 
 
 def frags_to_list(sentence_fragments) -> List[str]:
+    """
+    Converts a list of sentence fragment dictionaries to a list of strings.
+    """
     return [fragment["text"] for fragment in sentence_fragments]
 
 
 def transform_sentences(sentences, change_prompt: str):
+    """
+    Transforms a list of sentences based on a specified style or tone change,
+    modifying each fragment while keeping their lengths consistent.
+    """
 
     print(f"Starting to transform {len(sentences)} sentences.")
     print(f"Change prompt: {change_prompt}")

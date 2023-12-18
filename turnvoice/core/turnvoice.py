@@ -1,11 +1,21 @@
 def main():
+    """
+    The main entry point of the TurnVoice application.
+    Parses command-line arguments for video processing and
+    invokes the prepare / render function.
+    """
+
+    # Print welcome message
     print("Welcome to TurnVoice!")
 
     import argparse
+
+    # Initialize argument parser with description
     parser = argparse.ArgumentParser(
         description="Replaces voices in Youtube videos. Can translate."
     )
 
+    # Define command-line arguments
     parser.add_argument(
         'inputvideo', nargs='?', type=str,
         help='Input video. URL or ID of a YouTube video or '
@@ -85,9 +95,10 @@ def main():
         help='Directory to save synthesized audio files. (Optional)'
     )
     parser.add_argument(
-        '-exoff', '--extractoff', action='store_true',
-        help='Disables extraction of audio from the video file. Downloads '
-             'audio and video files from the internet. (Optional)'
+        '-ex', '--extract', action='store_true',
+        help='Enables extraction of audio from the video file. Downloads '
+             'audio from the internet otherwise (often better results). '
+             '(Optional)'
     )
     parser.add_argument(
         '-c', '--clean_audio', action='store_true',
@@ -118,10 +129,11 @@ def main():
         help='Prints extended debugging output. (Optional)'
     )
 
+    # Parse the arguments provided by the user
     args = parser.parse_args()
 
+    # Determine the input video source and target language for translation
     input_video = args.source if args.source is not None else args.inputvideo
-
     language = (
         args.language_optional
         if args.language_optional is not None
@@ -129,14 +141,14 @@ def main():
     )
 
     # Call the main processing function
-    from .render import prepare_and_start_rendering
-    prepare_and_start_rendering(
+    from .prepare import prepare_and_render
+    prepare_and_render(
         p_input_video=input_video,
         p_target_language=language,
         p_source_language=args.input_language,
         p_download_directory=args.download_directory,
         p_synthesis_directory=args.synthesis_directory,
-        p_extract_disabled=args.extractoff,
+        p_extract=args.extract,
         p_voices=args.voice,
         p_engines=args.engine,
         p_output_video=args.output_video,
@@ -152,9 +164,11 @@ def main():
         p_prompt=args.prompt,
         p_debug=args.debug,
         p_prepare=args.prepare,
-        p_render=args.render
+        p_render=args.render,
+        p_stable=True
     )
 
 
+# Ensures this script runs only when executed directly
 if __name__ == "__main__":
     main()

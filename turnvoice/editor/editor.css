@@ -1,0 +1,160 @@
+body {
+    background-color: #1E1E1E;
+    color: #CCCCCC; 
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Roboto', sans-serif; 
+}
+
+#currentTimeLabel {
+    position: relative;
+    width: 150px;
+    margin-top: 15px;
+    font-size: 22px;
+    color: #fed0a7;
+    padding: 8px;
+    padding-right: 12px;
+    padding-bottom: 10px;
+    border: 2px solid #ff7700;
+    border-radius: 4px;
+    background-color: #002F46;
+    display: inline-block; 
+}
+
+#labelAndCheckbox {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 10px;
+}
+
+#chkAutoscrollContainer {
+    margin-top: 15px;
+    margin-left: 60px;
+    display: flex; 
+    align-items: center; 
+}
+
+.track {
+    margin-bottom: 3px;
+    position: relative;
+    height: 60px;
+    border: 1px solid #383838;
+    background-color: #202020;
+}
+
+.block {
+    padding:2px;
+    overflow: hidden;
+    position: absolute;
+    height: 53px;
+    background-color: #002F46;
+    cursor: move;
+    border: 2px solid #aa5001;
+    border-radius: 4px;
+    font-size: 17px;
+    color: #C0C0C0; 
+    text-shadow: 0px 0px 3px #000;
+}
+.block[contentEditable="true"]:focus {
+    background-color: #000000;
+    outline: none;
+    color: #FFFFFF;
+    border: 4px solid #f730f7;
+}
+
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    width: 150px;
+    background: #252525; 
+    border: 1px solid #444;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.context-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #CCCCCC; 
+}
+
+.context-menu li:hover {
+    background-color: #333; 
+}
+
+.current-time-line {
+    position: absolute;
+    width: 2px;
+    height: 70px;
+    background-color: #ff7700;
+    z-index: 999999;
+}
+
+#mainContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: flex-start;    
+    z-index: 100;
+    width: 1200px;
+}
+
+#rightColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    margin-left: 20px;
+}
+
+#youtubePlayer {
+    width: 680px; 
+    height: 400px;
+}
+
+#tracksContainer {
+    margin-top: 400px;
+}
+
+#currentTimeLine {
+    margin-top: 400px;
+}
+
+
+.block:hover {
+    border-color: #80bdff; 
+    background-color: #003c5a;
+}
+.track:hover {
+    border-color: #787878; 
+    background-color: #272626;
+}
+
+#fileInput, #saveButton, #cliOutput {
+    background-color: #272727;
+    border: 2px solid #929292;
+    color: #C0C0C0;
+    padding: 10px; 
+    font-size: 16px; 
+    border-radius: 4px; 
+}
+
+#saveButton {
+    margin-top: 15px;
+    align-self: flex-end; 
+    cursor: pointer; 
+}
+
+#saveButton:hover, .block:hover {
+    background-color: #003c5a;
+}
+
+#cliOutput {
+    width: 93%; 
+    height: 100px;
+    margin-top: 10px;
+}

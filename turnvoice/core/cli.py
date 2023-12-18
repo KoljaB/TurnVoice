@@ -1,10 +1,9 @@
-SPLEETER_INSTRUCTIONS = """
-Spleeter CLI not installed. It's required for audio splitting.
-Installation steps:
-1. Ensure Python 3.8 is installed. Visit https://www.python.org/downloads/
-   to download Python.
-2. If pipx is not installed, run 'pip install pipx'
-3. Run 'pipx install spleeter --python /path/to/python3.8'
+DEMUX_INSTRUCTIONS = """
+Demux CLI not installed. It's required for audio splitting.
+Installation:
+1. Run 'python3 -m pip install -U demucs'
+2. Visit https://github.com/facebookresearch/demucs for more
+   information.
 """
 
 RUBBERBAND_INSTRUCTIONS = """
@@ -61,8 +60,8 @@ def verify_install(*libraries):
 
     if missing_libraries:
         for lib in missing_libraries:
-            if lib == "spleeter":
-                print(SPLEETER_INSTRUCTIONS)
+            if lib == "demux":
+                print(DEMUX_INSTRUCTIONS)
             elif lib == "rubberband":
                 print(RUBBERBAND_INSTRUCTIONS)
 

@@ -29,17 +29,15 @@ def create_composite_audio(
 
     print("Creating composite audio")
 
-    # Add initial silence if the first sentence doesn't start at the beginning
-    initial_silence_duration = sentences[0]["start"]
-    if initial_silence_duration > 0:
-        print(f"Adding silence at start: {initial_silence_duration} seconds")
-        clips.append(create_silence(initial_silence_duration))
-        current_duration += initial_silence_duration
-
     for index, sentence in enumerate(sentences):
+
+        print(f"Processing sentence {index}, "
+              f"{sentence['start']}-{sentence['end']}")
+
         # Calculate and add silence before the sentence
         silence_duration = sentence["start"] - current_duration
         if silence_duration > 0:
+            print(f"Adding silence: {silence_duration} seconds")
             clips.append(create_silence(silence_duration))
             current_duration += silence_duration
 
@@ -51,13 +49,17 @@ def create_composite_audio(
             )
         else:
             sentence_filename = f"sentence{index}.wav"
+
         sentence_clip = AudioFileClip(sentence_filename)
+        print(f"Adding clip {sentence_filename} "
+              f"({sentence_clip.duration} seconds)")
         clips.append(sentence_clip)
         current_duration += sentence_clip.duration
 
     # Add final silence if needed
     final_silence_duration = video_duration - current_duration
     if final_silence_duration > 0:
+        print(f"Adding final silence: {final_silence_duration} seconds")
         clips.append(create_silence(final_silence_duration))
 
     # Concatenate and save the final audio
@@ -152,9 +154,9 @@ def merge_video_audio(
         return None
 
 
-def split_audio(file_path, output_path, offset=0, duration=600):
+def split_audio(file_path, output_path):
     """
-    Splits an audio file into vocals and accompaniment using spleeter.
+    Splits an audio file into vocals and accompaniment using demux.
 
     :param file_path: Path to the source audio file.
     :param output_path: Directory to save the separated audio files.
@@ -167,58 +169,50 @@ def split_audio(file_path, output_path, offset=0, duration=600):
     name, ext = splitext(basename(file_path))
 
     # Paths for the separated audio files
-    vocals_path = join(output_path, f"{name}/vocals.wav")
-    accompaniment_path = join(output_path, f"{name}/accompaniment.wav")
+    base_path = join(output_path, "htdemucs_ft")
+    vocals_path = join(base_path, f"{name}/vocals.wav")
+    accompaniment_path = join(base_path, f"{name}/no_vocals.wav")
 
     # Check if separation is already done
+    print("Checking if vocals and accompaniment files exist: "
+          f"{vocals_path} and {accompaniment_path}")
     if exists(vocals_path) and exists(accompaniment_path):
-        print("Vocals and accompaniment files exist, skipping separation")
+        print("Vocals and accompaniment files exist, skipping separation and "
+              f"returning paths: {vocals_path} and {accompaniment_path}")
         return vocals_path, accompaniment_path
 
     # Check if the file needs to be converted to mp3
     file_path_temp = file_path
-    # if ext.lower() != '.mp3':
-    #     print(f"Converting audio from format {ext} to mp3")
-    #     file_path_temp = join(output_path, f"{name}.mp3")
-    #     subprocess.run(
-    #         ['ffmpeg',
-    #          '-y',
-    #          '-i', file_path,
-    #          '-codec', 'libmp3lame',
-    #          '-b', '320k',
-    #          file_path_temp], check=True)
-
-    if ext.lower() != '.wav':
-        file_path_temp = join(output_path, f"{name}.wav")
-
-        print(f"Converting audio {file_path} from format "
-              f"{ext} to wav ({file_path_temp})")
+    if ext.lower() != '.mp3':
+        print(f"Converting audio from format {ext} to mp3")
+        file_path_temp = join(output_path, f"{name}.mp3")
         subprocess.run(
             ['ffmpeg',
              '-y',
              '-i', file_path,
-             '-codec', 'pcm_s32le',  # pcm_s16le, pcm_s32le
-             '-ar', '44100',  # Sets the sample rate to 96 kHz
+             '-codec', 'libmp3lame',
+             '-b', '320k',  # '-b', '320k',
              file_path_temp], check=True)
 
-    # Separate audio into vocals and accompaniment using spleeter
+    # Separate audio into vocals and accompaniment using demux
     print(f"Splitting audio {file_path_temp} into accompaniment and "
-          f" vocals ({vocals_path}) using spleeter.")
+          f" vocals ({vocals_path}) using demucs.")
     subprocess.run(
-        ['spleeter',
-         'separate',
-         '-b', '196k',
+        ['demucs',
+         file_path_temp,
+         '-n', 'htdemucs_ft',
          '-o', output_path,
-         '-p', 'spleeter:2stems',
-         '-c', 'wav',
-         '-s', str(offset),
-         '-d', str(duration),
-         file_path_temp],
+         '--two-stems=vocals',
+         ],
         check=True)
 
     if exists(vocals_path) and exists(accompaniment_path):
+        print("Vocals and accompaniment files exist, returning paths: "
+              f"{vocals_path} and {accompaniment_path}")
         return (vocals_path, accompaniment_path)
     else:
+        print("Vocals and accompaniment could not be splitted, "
+              "returning None")
         return (None, None)
 
 
@@ -255,7 +249,8 @@ def merge_audios(
     audio1_filename,
     audio2_filename,
     timestamps,
-    output_filename
+    output_filename,
+    crossfade_duration=0.75
 ):
     """
     Merges two audio files based on specified timestamps.
@@ -265,11 +260,16 @@ def merge_audios(
     :param timestamps: List of tuples, each containing start and end times
         for segments from the second audio file.
     :param output_filename: Filename for the output merged audio file.
+    :param crossfade_duration: Duration of the crossfade in seconds.
     :return: Duration of the final audio clip.
     """
     # Load the audio files
     audio_clip1 = AudioFileClip(audio1_filename)
     audio_clip2 = AudioFileClip(audio2_filename)
+
+    print(f"Audio clip 1 duration: {audio_clip1.duration}")
+    print(f"Audio clip 2 duration: {audio_clip2.duration}")
+    min_duration = min(audio_clip1.duration, audio_clip2.duration)
 
     segments = []
 
@@ -277,9 +277,59 @@ def merge_audios(
     next_start = 0
 
     for start_time, end_time in timestamps:
-        # Add segment from audio1 if there is a gap
-        if start_time > next_start:
-            segments.append(audio_clip1.subclip(next_start, start_time))
+
+        sum_seg_duration = 0
+        for segment in segments:
+            sum_seg_duration += segment.duration
+
+        print(f"Sum of segms duration: {sum_seg_duration}, "
+              f"next_start: {next_start}, "
+              f"start_time: {start_time}, "
+              f"end_time: {end_time}")
+
+        if next_start < start_time:
+            # Add segment from audio1 if there is a gap
+            distance = start_time - next_start
+            corrected_cf_duration = min(distance, crossfade_duration)
+
+            print(f"Distance: {distance}, "
+                  f"Corrected Crossfade Duration: {corrected_cf_duration} "
+                  f"create fade from {next_start} to "
+                  f"{next_start+corrected_cf_duration} "
+                  f"and from {start_time-corrected_cf_duration} "
+                  f"to {start_time}")
+
+            cf_in_1 = audio_clip1.subclip(next_start, start_time)
+            cf_in_1 = cf_in_1.audio_fadein(corrected_cf_duration)
+
+            cf_in_2 = audio_clip2.subclip(
+                next_start,
+                next_start + corrected_cf_duration
+                )
+            cf_in_2 = cf_in_2.audio_fadeout(corrected_cf_duration)
+
+            cf_out_1 = CompositeAudioClip([cf_in_1, cf_in_2])
+            cf_out_1 = cf_out_1.audio_fadeout(corrected_cf_duration)
+
+            cf_out_2 = audio_clip2.subclip(
+                start_time - corrected_cf_duration,
+                start_time)
+            cf_out_2 = cf_out_2.audio_fadein(corrected_cf_duration)
+            offset_for_cf_out_2 = cf_out_1.duration - corrected_cf_duration
+            print(f"Duration of cf_out_1: {cf_out_1.duration} "
+                  f"Duration of cf_out_2: {cf_out_2.duration} "
+                  f"Offset for cf_out_2: {offset_for_cf_out_2}")
+            cf_out_2 = cf_out_2.set_start(offset_for_cf_out_2)
+
+            finalcrossfade_clip = CompositeAudioClip(
+                [cf_out_1, cf_out_2])
+
+            print("Final Crossfade Clip duration: "
+                  f"{finalcrossfade_clip.duration}")
+            print("Should be: "
+                  f"{(start_time - next_start)}")
+
+            segments.append(finalcrossfade_clip)
 
         # Add segment from audio2 for the specified duration
         segments.append(audio_clip2.subclip(start_time, end_time))
@@ -288,8 +338,20 @@ def merge_audios(
         next_start = end_time
 
     # Add remaining part from audio1 if any
-    if next_start < audio_clip1.duration:
-        segments.append(audio_clip1.subclip(next_start))
+    if next_start < min_duration:
+        distance = min_duration - next_start
+        corrected_cf_duration = min(distance, crossfade_duration)
+
+        print(f"Add remaining part: {distance}s"
+              f"Corrected Crossfade Duration: {corrected_cf_duration} ")
+        cf_in_1 = audio_clip1.subclip(next_start)
+        cf_in_1 = cf_in_1.audio_fadein(corrected_cf_duration)
+        cf_in_2 = audio_clip2.subclip(
+            next_start,
+            next_start + corrected_cf_duration)
+        cf_in_2 = cf_in_2.audio_fadeout(corrected_cf_duration)
+        cf_out_1 = CompositeAudioClip([cf_in_1, cf_in_2])
+        segments.append(cf_out_1)
 
     # Combine all segments
     final_audio = concatenate_audioclips(segments)

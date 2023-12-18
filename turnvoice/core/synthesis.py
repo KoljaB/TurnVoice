@@ -23,20 +23,21 @@ class Synthesis:
                  voices=None,
                  engine_names=["coqui"]
                  ):
+        """
+        Initializes the Synthesis class with language, voices, and TTS engines.
 
-        if language == "zh":
-            language = "zh-cn"
+        :param language: Language code, defaults to 'en'.
+        :param voices: List of voices, defaults to ['male.wav'].
+        :param engine_names: List of engine names, defaults to ['coqui'].
+        """
 
-        if len(language) == 0:
-            language = "en"
+        self.language = "zh-cn" if language == "zh" else language
+        self.language = "en" if language == "" else language
 
-        self.language = language
+        self.voices = voices or ["male.wav"]
         self.current_voice = 0
         self.engines = {}
         self.engine_names = engine_names
-        self.voices = voices
-        if not self.voices:
-            self.voices = ["male.wav"]
         self.engine = self.set_engine_by_index(0)
         if self.voices:
             self.engine.set_voice(self.voices[self.current_voice])
@@ -44,26 +45,39 @@ class Synthesis:
         self.stream = TextToAudioStream(self.engine)
 
     def create_engine(self, engine_name):
+        """
+        Creates a TTS engine based on the specified name.
+
+        :param engine_name: Name of the engine ('system', 'azure',
+          'elevenlabs', 'coqui', 'openai').
+        :return: Engine instance.
+        """
 
         if engine_name == "system":
             return SystemEngine()
-        elif engine_name == "azure":
+        if engine_name == "azure":
             return AzureEngine(
                 os.environ.get("AZURE_SPEECH_KEY"),
                 os.environ.get("AZURE_SPEECH_REGION")
                 )
-        elif engine_name == "elevenlabs":
+        if engine_name == "elevenlabs":
             return ElevenlabsEngine(
                 os.environ.get("ELEVENLABS_API_KEY")
                 )
-        elif engine_name == "coqui":
+        if engine_name == "coqui":
             return CoquiEngine(language=self.language)
-        elif engine_name == "openai":
+        if engine_name == "openai":
             return OpenAIEngine()
-        else:
-            raise Exception(f"Unknown engine name {engine_name}")
+
+        raise Exception(f"Unknown engine name {engine_name}")
 
     def set_engine(self, engine_name):
+        """
+        Sets the current TTS engine.
+        :param engine_name: Name of the engine to set.
+        :return: Engine instance.
+        """
+
         if engine_name not in self.engines:
             self.engines[engine_name] = self.create_engine(engine_name)
 
@@ -72,9 +86,14 @@ class Synthesis:
         return self.engines[engine_name]
 
     def set_engine_by_index(self, engine_index):
+        """
+        Sets the TTS engine based on the provided index.
+        :param engine_index: Index of the engine in the engine list.
+        """
+
         if engine_index >= len(self.engines):
-            print(f"Engine index {engine_index} is out of range. "
-                  f"Using default engine {self.engine_names[0]}")
+            print(f"No engine specified for voice {engine_index + 1}. "
+                  f"Using first/default engine {self.engine_names[0]}")
             engine_index = 0
 
         engine_name = self.engine_names[engine_index]
@@ -86,9 +105,11 @@ class Synthesis:
         return self.set_engine(engine_name)
 
     def set_language(self, language):
-        if language == "zh":
-            language = "zh-cn"
-
+        """
+        Sets the language for TTS synthesis.
+        :param language: Language code to set.
+        """
+        language = "zh-cn" if language == "zh" else language
         self.engine.language = language
 
     def synthesize(self,
@@ -97,6 +118,13 @@ class Synthesis:
                    speed: float = 1.0,
                    speaker_index=0,
                    ):
+        """
+        Synthesizes text into audio.
+        :param text: Text to synthesize.
+        :param filename: Output file name for the audio.
+        :param speed: Speed of the speech (default is 1.0).
+        :param speaker_index: Index of the speaker voice to use.
+        """
 
         if speaker_index != self.current_engine_index:
             self.set_engine_by_index(speaker_index)
@@ -115,7 +143,7 @@ class Synthesis:
         self.stream.feed(text)
 
         if self.engine_name == "elevenlabs":
-            audio_file_name, extension = splitext(filename)
+            audio_file_name, _ = splitext(filename)
             mp3_file_name = audio_file_name + ".mp3"
             self.stream.play(output_wavfile=mp3_file_name, muted=True)
 
@@ -185,17 +213,17 @@ class Synthesis:
                     return filename
 
                 fail_reasons = []
-                if last_word >= max_last_word_distance:
+                if last_word > max_last_word_distance:
                     fail_reasons.append(
                         f"last word distance was {last_word:.2f} "
                         f"(max {max_last_word_distance:.2f})"
                         )
-                if lev <= max_levenshtein_distance:
+                if lev < max_levenshtein_distance:
                     fail_reasons.append(
                         f"levenshtein distance was {lev:.2f} "
                         f"(min {max_levenshtein_distance:.2f})"
                         )
-                if jaro <= max_jaro_winkler_distance:
+                if jaro < max_jaro_winkler_distance:
                     fail_reasons.append(
                         f"jaro winkler distance was {jaro:.2f} "
                         f"(min {max_jaro_winkler_distance:.2f})"
@@ -352,6 +380,8 @@ class Synthesis:
         use_stable (bool): Whether to use the stable_whisper
             model for verification.
         """
+
+        # Sort sentences by start time
         successful_synthesis = 0
         for index, sentence in enumerate(sentences):
             self.print_sentence_info(
@@ -370,6 +400,8 @@ class Synthesis:
                       f"{sentence['text']}, assuming 0"
                       )
                 sentence["speaker_index"] = 0
+
+            sentence["speaker_index"] = int(sentence["speaker_index"])
 
             if sentence["speaker_index"] >= number_of_voices:
                 print(f"Skipping synthesis for sentence {index}, "

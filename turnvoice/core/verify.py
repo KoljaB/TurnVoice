@@ -4,15 +4,22 @@ import textdistance
 import re
 
 
-def normalize_text(text):
+def normalize_text(text: str) -> str:
+    """
+    Normalizes the given text by stripping leading/trailing spaces,
+    converting to lowercase, removing punctuation and special characters,
+    and standardizing whitespace.
+
+    Args:
+        text (str): The text to be normalized.
+
+    Returns:
+        str: The normalized text.
+    """
     text = text.strip()
     text = text.lower()
-
-    # Remove punctuation and special characters
-    text = re.sub(r'[^\w\s]', '', text)
-
-    # Standardize whitespace (convert multiple spaces to a single space)
-    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation and special chars
+    text = re.sub(r'\s+', ' ', text)  # Standardize whitespace
 
     return text
 
@@ -34,7 +41,12 @@ def verify_synthesis(
 
     # transcribe text
     print(f"Using faster transcribe for verification of {input_file}")
-    segs, _ = faster_transcribe(input_file, language=None, model="large-v2")
+    segs, _ = faster_transcribe(
+        input_file,
+        language=None,
+        model="large-v2",
+        vad=False
+        )
 
     words = extract_words(segs)
     if len(words) == 0:
