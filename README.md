@@ -7,7 +7,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
 ## Features
 
 - **Voice Transformation**  
-  Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning, 58 voices included)*</sup>
+  Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning, [58 voices](#predefined-voices) included*</sup>
 
 - **Voice Variety**  
   Support for popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), or [Azure](#azure-engine) for more voices. [^7]
