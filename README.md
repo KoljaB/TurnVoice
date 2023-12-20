@@ -13,7 +13,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
   Support for popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), or [Azure](#azure-engine) for more voices. [^7]
 
 - **Translation**  
-  Translates videos at zero costs powered by free deep-translator, for example from english to chinese.
+  [Translates](#translation) videos at zero costs, for example from english to chinese. <sup>*powered by free deep-translator*</sup>
 
 - **Change Speaking Styles** <sup>*(AI powered)*</sup>  
   Make every spoken sentence delivered in a custom speaking style for a unique flair using prompting. [^6]
@@ -38,16 +38,18 @@ Minimum 8 GB VRAM Nvidia graphics card recommended, tested on Python 3.11.4 / Wi
 - [NVIDIA CUDA Toolkit 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive) installed
   <details>
   <summary>To install NVIDIA CUDA Toolkit:</summary>
-    - Visit [NVIDIA CUDA Toolkit Archive](https://developer.nvidia.com/cuda-11-8-0-download-archive).
-    - Select operating system and version.
-    - Download and install the software.
+
+    - Visit [NVIDIA CUDA Toolkit Archive](https://developer.nvidia.com/cuda-11-8-0-download-archive).  
+    - Select operating system and version.  
+    - Download and install the software.  
   </details>
 - [NVIDIA cuDNN](https://developer.nvidia.com/rdp/cudnn-archive) installed.
   <details>
   <summary>To install NVIDIA cuDNN:</summary>
-    - Visit [NVIDIA cuDNN Archive](https://developer.nvidia.com/rdp/cudnn-archive).
-    - Download and install the software.
-      (tested with v8.7.0, should also work with newer versions)
+
+    - Visit [NVIDIA cuDNN Archive](https://developer.nvidia.com/rdp/cudnn-archive).  
+    - Download and install the software.  
+      (tested with v8.7.0, should also work with newer versions)  
   </details>
 - [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^2] 
 - [ffmpeg](https://ffmpeg.org/download.html) command-line utility installed [^3]
@@ -153,7 +155,7 @@ Adjust the path in the displayed CLI command (the editor can't read that informa
 
 Assign engines and voices to each speaker track with the -e and -v commands.
 
-## Parameters Explained:
+## Parameters
 
 - `-i`, `--in`: Input video. Accepts a YouTube video URL or ID, or a path to a local video file.
 - `-l`, `--language`: Language for translation. Coqui synthesis supports: en, es, fr, de, it, pt, pl, tr, ru, nl, cs, ar, zh, ja, hu, ko. Omit to retain the original video language.
@@ -181,9 +183,11 @@ Assign engines and voices to each speaker track with the -e and -v commands.
 
 > `-i` and `-l` can be used as both positional and optional arguments.
 
-**Translation**  
+## Translation
 
 Translate a video into another language using the -l parameter.
+
+For example, to translate into chinese you could use:
 
 ```python
 turnvoice https://www.youtube.com/watch?v=ZTH771HIhpg -l zh-CN -v daisy
@@ -194,6 +198,7 @@ turnvoice https://www.youtube.com/watch?v=ZTH771HIhpg -l zh-CN -v daisy
 
 <details>
 <summary>Languages for Coqui Engine</summary>
+
 | Shortcut | Language    |
 |----------|-------------|
 | ar       | Arabic      |
