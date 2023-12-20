@@ -192,9 +192,8 @@ For example, to translate into chinese you could use:
 ```python
 turnvoice https://www.youtube.com/watch?v=ZTH771HIhpg -l zh-CN -v daisy
 ```
+<sup>[Output Video](https://youtu.be/YdzFO91oVEI)</sup>
 <sup>*💡 Tip: In the tests folder you find a voice "chinese.json" trained on chinese phonemes.*</sup>
-
-[Output Video](https://youtu.be/YdzFO91oVEI)
 
 <details>
 <summary>Languages for Coqui Engine</summary>
