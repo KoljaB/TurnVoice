@@ -155,7 +155,7 @@ def unload_stable_model():
         print("Stable is not loaded.")
 
 
-def faster_transcribe(file_name, language=None, model="large-v2", vad=True):
+def faster_transcribe(file_name, language=None, model="medium", vad=True):
     """
     Transcribes a audio file with faster_whisper,
     returns transcript and word timestamps.
@@ -222,7 +222,7 @@ def stable_transcribe(file_name, language=None, model="large-v3", vad=True):
         vad=vad,
         language=language,
         suppress_silence=True,
-        ts_num=16,
+        #ts_num=16,
         regroup=False  # disable default regrouping logic
         )
 
@@ -280,7 +280,7 @@ def extract_words(segments):
     return words
 
 
-def transcribe(file_name, language=None, model="large-v3", use_stable=False):
+def transcribe(file_name, language=None, model="large-v3", use_faster=False):
     """
     Transcribes the given audio file using the specified model.
     Chooses between stable and faster transcription models based
@@ -292,13 +292,13 @@ def transcribe(file_name, language=None, model="large-v3", use_stable=False):
     :param use_stable: Boolean flag to choose between stable or faster model.
     :return: Transcription result.
     """
-    if use_stable:
-        return stable_transcribe(file_name, language, model)
-    else:
+    if use_faster:
         return faster_transcribe(file_name, language, model)
+    else:
+        return stable_transcribe(file_name, language, model)
 
 
-def unload_model(use_stable=False):
+def unload_model(use_faster=False):
     """
     Unloads the transcription model from memory.
     Chooses between unloading the stable or faster model based on 'use_stable'
@@ -306,7 +306,7 @@ def unload_model(use_stable=False):
     :param use_stable: Boolean flag to choose between unloading stable or
       faster model.
     """
-    if use_stable:
-        unload_stable_model()
-    else:
+    if use_faster:
         unload_faster_model()
+    else:
+        unload_stable_model()

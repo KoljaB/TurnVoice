@@ -297,3 +297,43 @@ def get_processing_times(
         limit_times = [(0, limit_end_time)]
 
     return limit_times, processing_start, processing_end
+
+
+def process_filename(filename: str) -> str:
+    """
+    Process a given filename by removing '_audio', filtering out special
+    characters, replacing spaces with underscores, and truncating to 50
+    characters. Renames the file if changes are made.
+
+    :param filename: The original filename to process.
+    :return: The processed filename.
+    """
+    # Split basename from extension
+    basename, extension = os.path.splitext(filename)
+
+    # Remove "_audio"
+    basename = basename.replace("_audio", "")
+
+    # Filter special characters and multiple spaces
+    basename = ''.join(char if char.isalnum() or char.isspace() else ' '
+                       for char in basename)
+    basename = ' '.join(basename.split())
+
+    # Replace spaces with underscores
+    basename = basename.replace(' ', '_')
+
+    # Limit to 50 characters
+    basename = basename[:50]
+
+    # Recreate the new filename with extension
+    new_filename = f"{basename}{extension}"
+
+    # Rename the original file to the new filename
+    if filename == new_filename:
+        return filename
+
+    print(f"renaming file '{filename}'")
+    print(f"to new file name '{new_filename}'")
+    os.rename(filename, new_filename)
+
+    return new_filename

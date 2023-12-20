@@ -128,6 +128,19 @@ def main():
         '-dbg', '--debug', action='store_true',
         help='Prints extended debugging output. (Optional)'
     )
+    parser.add_argument(
+        '-faster', '--use_faster', action='store_true',
+        help='Usage of faster_whisper for transcription. Sometimes '
+             'stable_whisper throws OOM errors or delivers suboptimal '
+             'results. (Optional)'
+    )
+    parser.add_argument(
+        '-model', '--model', type=str,
+        help='Transcription model to be used. Defaults to large-v2. '
+             "Can be 'tiny', 'tiny.en', 'base', 'base.en', 'small', "
+             "'small.en', 'medium', 'medium.en', 'large-v1', 'large-v2', "
+             "'large-v3', or 'large'. (Optional)"
+    )
 
     # Parse the arguments provided by the user
     args = parser.parse_args()
@@ -165,7 +178,8 @@ def main():
         p_debug=args.debug,
         p_prepare=args.prepare,
         p_render=args.render,
-        p_stable=True
+        p_use_faster_whisper=args.use_faster,
+        p_model=args.model
     )
 
 

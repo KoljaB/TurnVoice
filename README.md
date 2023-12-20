@@ -7,13 +7,13 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
 ## Features
 
 - **Voice Transformation**  
-  Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning)*</sup>
+  Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning, 58 voices included)*</sup>
 
 - **Voice Variety**  
   Support for popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), or [Azure](#azure-engine) for more voices. [^7]
 
 - **Translation**  
-  Translates videos at zero costs powered by free deep-translator.
+  Translates videos at zero costs powered by free deep-translator, for example from english to chinese.
 
 - **Change Speaking Styles** <sup>*(AI powered)*</sup>  
   Make every spoken sentence delivered in a custom speaking style for a unique flair using prompting. [^6]
@@ -160,6 +160,8 @@ Assign engines and voices to each speaker track with the -e and -v commands.
 - `-p`, `--prompt`: Define a prompt to apply a style change to sentences like "speaking style of captain jack sparrow" [^6]
 - `-prep`, `--prepare`: Write full script with speaker analysis, sentence transformation and translation but doesn't perform synthesis or rendering. Can be continued.
 - `-r`, `--render`: Takes a full script and only perform synthesis and rendering on it, but no speaker analysis, sentence transformation or translation. 
+- `-faster`, `--use_faster`: Usage of faster_whisper for transcription. If stable_whisper transcription throws OOM errors or delivers suboptimal results. (Optional)
+- `-model`, `--model`: Transcription model to be used. Defaults to large-v2. Can be 'tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large-v1', 'large-v2', 'large-v3', or 'large'. (Optional)
 
 > `-i` and `-l` can be used as both positional and optional arguments.
 
@@ -171,6 +173,20 @@ Coqui engine is the default engine if no other engine is specified with the -e p
 <summary>To use voices from Coqui:</summary>
 
 #### Voices (-v parameter)
+
+You may either use one of the predefined coqui voices or clone your own voice.
+
+##### Predefined Voices
+
+To use a predefined voice submit the name of one of the following voices:
+
+'Claribel Dervla', 'Daisy Studious', 'Gracie Wise', 'Tammie Ema', 'Alison Dietlinde', 'Ana Florence', 'Annmarie Nele', 'Asya Anara', 'Brenda Stern', 'Gitta Nikolina', 'Henriette Usha', 'Sofia Hellen', 'Tammy Grit', 'Tanja Adelina', 'Vjollca Johnnie', 'Andrew Chipper', 'Badr Odhiambo', 'Dionisio Schuyler', 'Royston Min', 'Viktor Eka', 'Abrahan Mack', 'Adde Michal', 'Baldur Sanjin', 'Craig Gutsy', 'Damien Black', 'Gilberto Mathias', 'Ilkin Urbano', 'Kazuhiko Atallah', 'Ludvig Milivoj', 'Suad Qasim', 'Torcull Diarmuid', 'Viktor Menelaos', 'Zacharie Aimilios', 'Nova Hogarth', 'Maja Ruoho', 'Uta Obando', 'Lidiya Szekeres', 'Chandra MacFarland', 'Szofi Granger', 'Camilla Holmström', 'Lilya Stainthorpe', 'Zofija Kendrick', 'Narelle Moon', 'Barbora MacLean', 'Alexandra Hisakawa', 'Alma María', 'Rosemary Okafor', 'Ige Behringer', 'Filip Traverse', 'Damjan Chapman', 'Wulf Carlevaro', 'Aaron Dreschner', 'Kumar Dahl', 'Eugenio Mataracı', 'Ferran Simen', 'Xavier Hayasaka', 'Luis Moray', 'Marcos Rudaski'  
+
+*💡 Tip: simply write `-v gracie` as also parts of voice names are recognized and it's case-insensitive*
+
+[Samples for every voice](https://github.com/KoljaB/RealtimeTTS/tree/master/tests/coqui_voices)  
+
+##### Cloned Voices
 
 Submit path to one or more audiofiles containing 16 bit 24kHz mono source material as reference wavs.
 

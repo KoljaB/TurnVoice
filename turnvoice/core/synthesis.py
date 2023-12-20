@@ -62,7 +62,8 @@ class Synthesis:
                 )
         if engine_name == "elevenlabs":
             return ElevenlabsEngine(
-                os.environ.get("ELEVENLABS_API_KEY")
+                os.environ.get("ELEVENLABS_API_KEY"),
+                model="eleven_multilingual_v2"
                 )
         if engine_name == "coqui":
             return CoquiEngine(language=self.language)

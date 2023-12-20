@@ -24,7 +24,8 @@ def prepare_and_render(
         p_debug: bool = False,
         p_prepare: bool = False,
         p_render: str = None,
-        p_stable: bool = False
+        p_use_faster_whisper: bool = False,
+        p_model: str = "large-v2"
         ):
     """
     Video Processing Workflow covering downloading, audio extraction,
@@ -111,6 +112,9 @@ def prepare_and_render(
             p_extract
         )
 
+        from .processing import process_filename
+        audio_file = process_filename(audio_file)
+
         from moviepy.editor import AudioFileClip
         with AudioFileClip(audio_file) as audio_clip:
             duration = audio_clip.duration
@@ -187,7 +191,8 @@ def prepare_and_render(
     transcription_audio = vocal_path
     print(f"[{(time.time() - t_start):.1f}s] "
           f"transcribing audio {transcription_audio} with "
-          "stable_whisper..." if p_stable else "faster_whisper...",
+          "faster_whisper " if p_use_faster_whisper else "stable_whisper "
+          f"model {p_model}...",
           end="", flush=True
           )
 
@@ -195,8 +200,8 @@ def prepare_and_render(
     transcribed_segments, transcription_info = transcribe(
         transcription_audio,
         language=p_source_language,
-        model="large-v2",
-        use_stable=p_stable
+        model=p_model,
+        use_faster=p_use_faster_whisper
         )
 
     # Determine synthesis and target language
@@ -349,7 +354,7 @@ def prepare_and_render(
     assign_sentence_to_speakers(sentence_fragments, speakers)
 
     from .transcribe import unload_model
-    unload_model(p_stable)
+    unload_model(p_use_faster_whisper)
 
     from .translate import perform_translation
     perform_translation(
@@ -398,7 +403,7 @@ def prepare_and_render(
         "time_files": p_time_files,
         "prompt": p_prompt,
         "render": p_render,
-        "stable": p_stable,
+        "use_faster": p_use_faster_whisper,
         "audio_file": audio_file,
         "accompaniment_path": accompaniment_path,
         "video_file_muted": video_file_muted,
