@@ -66,6 +66,8 @@ def prepare_and_render(
     p_prepare (bool): Generates full script with speaker analysis, sentence
         prompt transformation and translation. Can be continued.
     p_render (str): Renders a prepared full script.
+    p_use_faster_whisper (bool): Usage of faster_whisper for transcription.
+    p_model (str): Model used for transcription.
     """
     import time
     t_start = time.time()
@@ -77,6 +79,9 @@ def prepare_and_render(
 
     from .processing import ensure_directories
     ensure_directories([p_download_directory, p_synthesis_directory])
+
+    if not p_model:
+        p_model = "large-v2"
 
     print("input parameters: \n"
           f"- video: {p_input_video}\n"
@@ -100,6 +105,8 @@ def prepare_and_render(
           f"- debug: {p_debug}\n"
           f"- prepare: {p_prepare}\n"
           f"- render: {p_render}\n"
+          f"- use faster: {p_use_faster_whisper}\n"
+          f"- model: {p_model}\n"
           )
 
     # Download video (if no local video provided)

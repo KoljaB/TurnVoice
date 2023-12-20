@@ -7,7 +7,7 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
 ## Features
 
 - **Voice Transformation**  
-  Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning, [58 voices](#predefined-voices) included*</sup>
+  Turn voices with the free [Coqui TTS](#coqui-engine) at no operating costs  <sup>*(supports voice cloning, 58 voices included*</sup>
 
 - **Voice Variety**  
   Support for popular TTS engines like [Elevenlabs](#elevenlabs-engine), [OpenAI TTS](#openai-engine), or [Azure](#azure-engine) for more voices. [^7]
@@ -33,6 +33,22 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
 
 ## Prerequisites
 
+Minimum 8 GB VRAM Nvidia graphics card recommended, tested on Python 3.11.4 / Windows 10.
+
+- [NVIDIA CUDA Toolkit 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive) installed
+  <details>
+  <summary>To install NVIDIA CUDA Toolkit:</summary>
+    - Visit [NVIDIA CUDA Toolkit Archive](https://developer.nvidia.com/cuda-11-8-0-download-archive).
+    - Select operating system and version.
+    - Download and install the software.
+  </details>
+- [NVIDIA cuDNN](https://developer.nvidia.com/rdp/cudnn-archive) installed.
+  <details>
+  <summary>To install NVIDIA cuDNN:</summary>
+    - Visit [NVIDIA cuDNN Archive](https://developer.nvidia.com/rdp/cudnn-archive).
+    - Download and install the software.
+      (tested with v8.7.0, should also work with newer versions)
+  </details>
 - [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^2] 
 - [ffmpeg](https://ffmpeg.org/download.html) command-line utility installed [^3]
   <details>
@@ -164,6 +180,180 @@ Assign engines and voices to each speaker track with the -e and -v commands.
 - `-model`, `--model`: Transcription model to be used. Defaults to large-v2. Can be 'tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large-v1', 'large-v2', 'large-v3', or 'large'. (Optional)
 
 > `-i` and `-l` can be used as both positional and optional arguments.
+
+**Translation**  
+
+Translate a video into another language using the -l parameter.
+
+```python
+turnvoice https://www.youtube.com/watch?v=ZTH771HIhpg -l zh-CN -v daisy
+```
+<sup>*💡 Tip: In the tests folder you find a voice "chinese.json" trained on chinese phonemes.*</sup>
+
+[Output Video](https://youtu.be/YdzFO91oVEI)
+
+<details>
+<summary>Languages for Coqui Engine</summary>
+| Shortcut | Language    |
+|----------|-------------|
+| ar       | Arabic      |
+| cs       | Czech       |
+| de       | German      |
+| en       | English     |
+| es       | Spanish     |
+| fr       | French      |
+| it       | Italian     |
+| hu       | Hungarian   |
+| ja       | Japanese    |
+| ko       | Korean      |
+| nl       | Dutch       |
+| pl       | Polish      |
+| pt       | Portuguese  |
+| ru       | Russian     |
+| tr       | Turkish     |
+| zh-cn    | Chinese     |
+</details>
+
+<details>
+<summary>Languages for other engines</summary>
+Make sure to select voice a supporting the language in Azure and System Engine.
+
+| Shortcut | Language               |
+|----------|------------------------|
+| af       | Afrikaans              |
+| sq       | Albanian               |
+| am       | Amharic                |
+| ar       | Arabic                 |
+| hy       | Armenian               |
+| as       | Assamese               |
+| ay       | Aymara                 |
+| az       | Azerbaijani            |
+| bm       | Bambara                |
+| eu       | Basque                 |
+| be       | Belarusian             |
+| bn       | Bengali                |
+| bho      | Bhojpuri               |
+| bs       | Bosnian                |
+| bg       | Bulgarian              |
+| ca       | Catalan                |
+| ceb      | Cebuano                |
+| ny       | Chichewa               |
+| zh-CN    | Chinese (Simplified)   |
+| zh-TW    | Chinese (Traditional)  |
+| co       | Corsican               |
+| hr       | Croatian               |
+| cs       | Czech                  |
+| da       | Danish                 |
+| dv       | Dhivehi                |
+| doi      | Dogri                  |
+| nl       | Dutch                  |
+| en       | English                |
+| eo       | Esperanto              |
+| et       | Estonian               |
+| ee       | Ewe                    |
+| tl       | Filipino               |
+| fi       | Finnish                |
+| fr       | French                 |
+| fy       | Frisian                |
+| gl       | Galician               |
+| ka       | Georgian               |
+| de       | German                 |
+| el       | Greek                  |
+| gn       | Guarani                |
+| gu       | Gujarati               |
+| ht       | Haitian Creole         |
+| ha       | Hausa                  |
+| haw      | Hawaiian               |
+| iw       | Hebrew                 |
+| hi       | Hindi                  |
+| hmn      | Hmong                  |
+| hu       | Hungarian              |
+| is       | Icelandic              |
+| ig       | Igbo                   |
+| ilo      | Ilocano                |
+| id       | Indonesian             |
+| ga       | Irish                  |
+| it       | Italian                |
+| ja       | Japanese               |
+| jw       | Javanese               |
+| kn       | Kannada                |
+| kk       | Kazakh                 |
+| km       | Khmer                  |
+| rw       | Kinyarwanda            |
+| gom      | Konkani                |
+| ko       | Korean                 |
+| kri      | Krio                   |
+| ku       | Kurdish (Kurmanji)     |
+| ckb      | Kurdish (Sorani)       |
+| ky       | Kyrgyz                 |
+| lo       | Lao                    |
+| la       | Latin                  |
+| lv       | Latvian                |
+| ln       | Lingala                |
+| lt       | Lithuanian             |
+| lg       | Luganda                |
+| lb       | Luxembourgish          |
+| mk       | Macedonian             |
+| mai      | Maithili               |
+| mg       | Malagasy               |
+| ms       | Malay                  |
+| ml       | Malayalam              |
+| mt       | Maltese                |
+| mi       | Maori                  |
+| mr       | Marathi                |
+| mni-Mtei | Meiteilon (Manipuri)   |
+| lus      | Mizo                   |
+| mn       | Mongolian              |
+| my       | Myanmar                |
+| ne       | Nepali                 |
+| no       | Norwegian              |
+| or       | Odia (Oriya)           |
+| om       | Oromo                  |
+| ps       | Pashto                 |
+| fa       | Persian                |
+| pl       | Polish                 |
+| pt       | Portuguese             |
+| pa       | Punjabi                |
+| qu       | Quechua                |
+| ro       | Romanian               |
+| ru       | Russian                |
+| sm       | Samoan                 |
+| sa       | Sanskrit               |
+| gd       | Scots Gaelic           |
+| nso      | Sepedi                 |
+| sr       | Serbian                |
+| st       | Sesotho                |
+| sn       | Shona                  |
+| sd       | Sindhi                 |
+| si       | Sinhala                |
+| sk       | Slovak                 |
+| sl       | Slovenian              |
+| so       | Somali                 |
+| es       | Spanish                |
+| su       | Sundanese              |
+| sw       | Swahili                |
+| sv       | Swedish                |
+| tg       | Tajik                  |
+| ta       | Tamil                  |
+| tt       | Tatar                  |
+| te       | Telugu                 |
+| th       | Thai                   |
+| ti       | Tigrinya               |
+| ts       | Tsonga                 |
+| tr       | Turkish                |
+| tk       | Turkmen                |
+| ak       | Twi                    |
+| uk       | Ukrainian              |
+| ur       | Urdu                   |
+| ug       | Uyghur                 |
+| uz       | Uzbek                  |
+| vi       | Vietnamese             |
+| cy       | Welsh                  |
+| xh       | Xhosa                  |
+| yi       | Yiddish                |
+| yo       | Yoruba                 |
+| zu       | Zulu                   |
+</details>
 
 ## Coqui Engine
 

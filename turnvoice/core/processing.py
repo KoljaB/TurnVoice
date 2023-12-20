@@ -332,6 +332,12 @@ def process_filename(filename: str) -> str:
     if filename == new_filename:
         return filename
 
+    if os.path.exists(new_filename):
+        print(f"file '{new_filename}' already exists, "
+              "skipping renaming..."
+              )
+        return new_filename
+
     print(f"renaming file '{filename}'")
     print(f"to new file name '{new_filename}'")
     os.rename(filename, new_filename)
