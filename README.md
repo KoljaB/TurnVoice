@@ -33,7 +33,8 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
 
 ## Prerequisites
 
-Minimum 8 GB VRAM Nvidia graphics card recommended, tested on Python 3.11.4 / Windows 10.
+Nvidia graphic card >8 GB VRAM recommended, tested on Python 3.11.4 / Windows 10.
+
 
 - [NVIDIA CUDA Toolkit 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive) installed
   <details>
