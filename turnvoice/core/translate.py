@@ -16,6 +16,12 @@ def translate(text: str, source: str = "en", target: str = "de") -> str:
     """
     # Create an instance of GoogleTranslator with specified source
     # and target languages
+    if source == "zh":
+        source = "zh-CN"
+    if target == "zh":
+        target = "zh-CN"
+
+    print(f"Translating with deep_translator from {source} to {target}...")
     translator = GoogleTranslator(source=source, target=target)
 
     # Perform the translation
