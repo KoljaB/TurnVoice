@@ -155,6 +155,11 @@ def prepare_and_render(
                 p_download_directory
             )
 
+            # from .cut import normalize_audio
+            # vocal_fname, vocal_ext = vocal_path_raw.split(".")
+            # vocal_path = f"{vocal_fname}_nrm.{vocal_ext}"
+            # normalize_audio(vocal_path_raw, vocal_path)
+
         print(f"[{(time.time() - t_start):.1f}s] "
               f"splitting finished, vocal path is {vocal_path}..."
               )
