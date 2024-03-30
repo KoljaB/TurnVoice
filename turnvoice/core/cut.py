@@ -6,7 +6,10 @@ from moviepy.editor import (
 )
 from os.path import basename, exists, join, splitext
 from .silence import create_silence
+from scipy.io import wavfile
+import numpy as np
 import subprocess
+import librosa
 
 
 def create_composite_audio(
@@ -360,3 +363,31 @@ def merge_audios(
     final_audio.write_audiofile(output_filename)
 
     return final_audio.duration
+
+
+def normalize_audio(input_file: str, output_file: str) -> None:
+    """
+    Normalize an audio file and save the normalized version.
+
+    This function loads an audio file, normalizes it (scaling based on the 
+    maximum absolute value in the signal), and then saves the normalized audio 
+    as a new file.
+
+    Args:
+    input_file (str): Path to the input audio file.
+    output_file (str): Path where the normalized audio file will be saved.
+
+    Returns:
+    None
+    """
+    # Load the audio file
+    audio, sample_rate = librosa.load(input_file, sr=None, mono=False)
+
+    # Normalize the audio
+    norm_audio = librosa.util.normalize(audio, norm_type='inf', axis=0)
+
+    # Convert the normalized audio to int16 format for saving as wav
+    norm_audio_int16 = (norm_audio * np.iinfo(np.int16).max).astype(np.int16)
+
+    # Save the normalized audio
+    wavfile.write(output_file, sample_rate, norm_audio_int16)
