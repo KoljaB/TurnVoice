@@ -2,6 +2,7 @@ from os.path import exists, join, splitext
 from moviepy.editor import VideoFileClip
 from yt_dlp import YoutubeDL
 import os
+import re
 
 
 def fetch_youtube(
@@ -62,27 +63,43 @@ def fetch_youtube(
     return downloaded_file
 
 
+def is_valid_youtube_id(yt_id: str) -> bool:
+    """
+    Checks if the given string is a valid YouTube video ID.
+
+    Args:
+        yt_id (str): The YouTube video ID to be checked.
+
+    Returns:
+        bool: True if it's a valid YouTube ID, False otherwise.
+    """
+    # YouTube video ID pattern (11 characters, can include '-' and '_')
+    yt_id_pattern = re.compile(r'^[a-zA-Z0-9_-]{11}$')
+    return bool(yt_id_pattern.match(yt_id))
+
+
 def check_youtube(url_or_id: str):
     """
     Checks if given url is a valid YouTube video or a YouTube ID.
 
     Args:
-        url (str): The URL of the YouTube video to be checked.
+        url_or_id (str): The URL of the YouTube video to be checked
+          or the video ID.
 
     Returns:
         bool: True if the URL is valid, False otherwise.
     """
-    # check for ID
-    if len(url_or_id) == 11 and url_or_id.isalnum():
-        print(f"{url_or_id} has 11 chars and is alphanumeric, "
-              "seems like valid youtube ID")
+    # Check if it's a valid YouTube ID
+    if is_valid_youtube_id(url_or_id):
+        print(f"{url_or_id} matches YouTube video ID pattern.")
         return True
 
-    if "youtube.com" in url_or_id:
-        print(f"{url_or_id} contains youtube.com => "
-              "probably a valid youtube URL")
+    # Check if it's a valid YouTube URL
+    if "youtube.com/watch?v=" in url_or_id or "youtu.be/" in url_or_id:
+        print(f"{url_or_id} contains a valid YouTube URL pattern.")
         return True
 
+    # Not a valid YouTube video ID or URL
     return False
 
 
@@ -103,7 +120,7 @@ def ensure_youtube_url(url_or_id: str) -> str:
     str: The full YouTube video URL if a video ID was provided,
       otherwise the original URL.
     """
-    if len(url_or_id) == 11 and url_or_id.isalnum():
+    if is_valid_youtube_id(url_or_id):
         return "https://www.youtube.com/watch?v=" + url_or_id
     return url_or_id
 
