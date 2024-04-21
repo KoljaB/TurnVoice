@@ -2,6 +2,8 @@
 
 A command-line tool to **transform voices** in (YouTube) videos with additional **translation** capabilities. [^1] 
 
+> **Hint:** *Anybody interested in state-of-the-art voice solutions please also <strong>have a look at [Linguflex](https://github.com/KoljaB/Linguflex)</strong>. It lets you control your environment by speaking and is one of the most capable and sophisticated open-source assistants currently available.*
+
 https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e9f6190c
 
 ## Features
