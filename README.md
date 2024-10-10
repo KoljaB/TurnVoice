@@ -102,7 +102,7 @@ pip install turnvoice
 > `pip install torch==2.1.2+cu118 torchaudio==2.1.2+cu118 --index-url https://download.pytorch.org/whl/cu118`  
 >   
 > ***For CUDA 12.1***  
-> `pip install torch==2.1.2+cu118 torchaudio==2.1.2+cu211 --index-url https://download.pytorch.org/whl/cu211`  
+> `pip install torch==2.1.2+cu211 torchaudio==2.1.2+cu211 --index-url https://download.pytorch.org/whl/cu211`  
 
 ## Usage
 
