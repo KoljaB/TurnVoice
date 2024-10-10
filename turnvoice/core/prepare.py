@@ -75,7 +75,13 @@ def prepare_and_render(
 
     from .cli import verify_install
     if not verify_install("spleeter", "rubberband"):
+        print("Spleeter is not installed. Please install it to proceed with audio splitting.")
+        print("Spleeter is an audio separation tool developed by Deezer that allows you to split music tracks into different components such as vocals and accompaniment.")
+        print("To install spleeter, you can run the following command:")
+        print("\n   pip install spleeter\n")
+        print("For more details and installation options, visit the official repository at: https://github.com/deezer/spleeter")
         return
+
 
     from .processing import ensure_directories
     ensure_directories([p_download_directory, p_synthesis_directory])
