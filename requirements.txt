@@ -1,6 +1,5 @@
 moviepy==1.0.3
 yt-dlp==2024.10.7
-faster_whisper==1.0.3
 stable-ts==2.17.4
 realtimetts==0.4.6
 textdistance==4.6.3
@@ -9,3 +8,4 @@ pyannote.audio==3.3.2
 deep-translator==1.11.4
 instructor==1.5.2
 demucs==4.0.1
+spleeter==2.4.0
