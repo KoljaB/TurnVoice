@@ -66,6 +66,7 @@ class Synthesis:
                 model="eleven_multilingual_v2"
                 )
         if engine_name == "coqui":
+            print(f"Language: {self.language}")
             return CoquiEngine(language=self.language)
         if engine_name == "openai":
             return OpenAIEngine()
@@ -337,6 +338,10 @@ class Synthesis:
 
             # with this optimal speed we stretch the audio
             # to fit into the desired duration
+            if optimal_speed < 0.3:
+                optimal_speed = 0.3
+            if optimal_speed > 2.5:
+                optimal_speed = 2.5
             time_stretch(synthesis_file, stretched_file, optimal_speed)
 
             processing_file = generate_filename(
