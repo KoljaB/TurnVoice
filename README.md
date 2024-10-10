@@ -37,22 +37,18 @@ https://github.com/KoljaB/TurnVoice/assets/7604638/e0d9071c-0670-44bd-a6d5-4800e
 
 Nvidia graphic card >8 GB VRAM recommended, tested on Python 3.11.4 / Windows 10.
 
-
-- [NVIDIA CUDA Toolkit 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive) installed
+- [NVIDIA CUDA Toolkit 12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive) installed
   <details>
   <summary>To install NVIDIA CUDA Toolkit:</summary>
 
-    - Visit [NVIDIA CUDA Toolkit Archive](https://developer.nvidia.com/cuda-11-8-0-download-archive).  
     - Select operating system and version.  
     - Download and install the software.  
   </details>
-- [NVIDIA cuDNN](https://developer.nvidia.com/rdp/cudnn-archive) installed.
+- [NVIDIA cuDNN](https://developer.nvidia.com/cudnn-downloads) installed.
   <details>
   <summary>To install NVIDIA cuDNN:</summary>
-
-    - Visit [NVIDIA cuDNN Archive](https://developer.nvidia.com/rdp/cudnn-archive).  
     - Download and install the software.  
-      (tested with v8.7.0, should also work with newer versions)  
+      (tested with v9.5.0, should also work with newer versions)  
   </details>
 - [Rubberband](https://breakfastquay.com/rubberband/) command-line utility installed [^2] 
 - [ffmpeg](https://ffmpeg.org/download.html) command-line utility installed [^3]
@@ -98,11 +94,12 @@ pip install turnvoice
 > [!TIP]
 > For faster rendering with GPU prepare your [CUDA](https://pytorch.org/get-started/locally/) environment after installation:
 > 
-> ***For CUDA 11.8***  
-> `pip install torch==2.1.2+cu118 torchaudio==2.1.2+cu118 --index-url https://download.pytorch.org/whl/cu118`  
->   
 > ***For CUDA 12.1***  
-> `pip install torch==2.1.2+cu211 torchaudio==2.1.2+cu211 --index-url https://download.pytorch.org/whl/cu211`  
+> `pip install torch==2.3.1+cu211 torchaudio==2.3.1+cu211 --index-url https://download.pytorch.org/whl/cu211`  
+
+Rendering time is high even with a strong GPU, therefore while it might be possible it is not recommended to run this script on CPU only.
+
+Note: Do not use torch versions >= 2.4 together with cuNN 9.0 because faster_whisper (CTranslate2) does not support this combination yet.
 
 ## Usage
 
@@ -498,6 +495,14 @@ turnvoice https://www.youtube.com/watch?v=BqnAeUoqFAM -e system -v David
 
 - delivers best results with YouTube videos featuring **clear spoken** content (podcasts, educational videos)
 - requires a high-quality, **clean** source WAV file for effective voice cloning 
+
+## Troubleshoot
+
+If you run into "Could not locate cudnn_ops_infer64_8.dll", this is caused by faster_whisper not supporing the combination of cuDNN version greater than 9 and PyTorch version greater than 2.4. 
+
+To solve:
+- Downgrade cuDNN to a version lower than 9 OR
+- Downgrade PyTorch to a version lower than 2.4.
 
 ## Pro Tips
 
